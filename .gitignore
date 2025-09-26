@@ -1,0 +1,35 @@
+# Eclipse files
+.classpath
+.project
+.settings/
+
+# Build output
+/bin/
+/build/
+/target/
+
+# Maven
+log/
+*.log
+dependency-reduced-pom.xml
+
+# IntelliJ (nếu có mở bằng IntelliJ)
+.idea/
+*.iml
+
+# Tomcat / Server
+Servers/
+/.metadata/
+tmp/
+
+# OS-specific
+.DS_Store
+Thumbs.db
+
+# Others
+*.war
+*.ear
+*.jar
+
+# VSCode (nếu dùng thêm)
+.vscode/
