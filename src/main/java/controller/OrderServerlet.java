@@ -10,7 +10,7 @@ import java.io.IOException;
 /**
  * Servlet implementation class OrderServerlet
  */
-@WebServlet("/OrderServerlet")
+@WebServlet("/order")
 public class OrderServerlet extends HttpServlet {
 	private static final long serialVersionUID = 1L;
        
