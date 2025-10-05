@@ -9,6 +9,7 @@ USE canteen_db;
 -- Bảng User
 CREATE TABLE IF NOT EXISTS User (
     id INT AUTO_INCREMENT PRIMARY KEY,
+    photo BLOB,
     username VARCHAR(50) NOT NULL UNIQUE,
     password VARCHAR(255) NOT NULL,
     role ENUM('admin', 'staff', 'customer') DEFAULT 'customer', -- admin = quản trị, staff = quầy, customer = khách
@@ -18,6 +19,7 @@ CREATE TABLE IF NOT EXISTS User (
 -- Bảng Food
 CREATE TABLE IF NOT EXISTS Food (
     id INT AUTO_INCREMENT PRIMARY KEY,
+    image BLOB,
     name VARCHAR(100) NOT NULL,
     price DOUBLE NOT NULL DEFAULT 0.0,
     inventory INT NOT NULL DEFAULT 0
@@ -59,3 +61,4 @@ CREATE TABLE IF NOT EXISTS Statistics (
     FOREIGN KEY (staffId) REFERENCES User(id),
     FOREIGN KEY (foodId) REFERENCES Food(id)
 );
+

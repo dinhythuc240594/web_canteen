@@ -1,0 +1,1 @@
+INSERT INTO User(username, password, role) VALUES ('admin', MD5('admin123'), 'admin')

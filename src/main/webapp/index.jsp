@@ -7,6 +7,7 @@
 <title>Home</title>
 </head>
 <body>
-<a href="login">Login</a>
+<a href="login">Login</a><br />
+<a href="foods?action=list">List</a>
 </body>
 </html>
