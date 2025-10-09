@@ -26,7 +26,7 @@
         <input type="text" id="inventoryFood" class="form-control" name="inventoryFood"><br />
         <button type="submit" class="btn btn-primary">Create</button>
       </form>
-	
+	<a href="foods?action=list">Go back to Home</a>
     </div>
   </div>
 

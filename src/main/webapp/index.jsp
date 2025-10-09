@@ -7,7 +7,16 @@
 <title>Home</title>
 </head>
 <body>
-<a href="login">Login</a><br />
+<% String type_user = (String) request.getAttribute("type_user"); %>
+
+<% if(type_user == "guest"){ %>
+	<a href="login">Login</a><br />	
+<% } %>
+
+<% if(type_user != "guest"){ %>
+	<a href="logout">Logout</a><br />	
+<% } %>
+
 <a href="foods?action=list">List</a>
 </body>
 </html>

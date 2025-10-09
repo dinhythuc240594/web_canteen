@@ -27,6 +27,7 @@
         
     </div>
 	<% } %>
+	<a href="foods?action=list">Go back to Home</a>
   </div>
 
 </body>

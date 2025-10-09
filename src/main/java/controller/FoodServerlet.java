@@ -6,7 +6,7 @@ import jakarta.servlet.annotation.WebServlet;
 import jakarta.servlet.http.HttpServlet;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
-
+import jakarta.servlet.http.HttpSession;
 import model.FoodDAO;
 import serviceimpl.FoodServiceImpl;
 import utils.DataSourceUtil;
@@ -36,7 +36,7 @@ public class FoodServerlet extends HttpServlet {
 	protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
 		
 		String action = request.getParameter("action");
-		System.out.println(action);
+		System.out.println("redirect page: " + action);
 		if (action == null) {
 			action = "list";
 		}
@@ -45,6 +45,10 @@ public class FoodServerlet extends HttpServlet {
 		String id = request.getParameter("id");
 		FoodDAO foundFood = null;
 
+		HttpSession session = request.getSession();
+		request.setAttribute("username", session.getAttribute("username"));
+//		request.setAttribute("role", session.getAttribute("role"));
+		
 		RequestDispatcher rd;
 		switch (action) {
 			case "list":
@@ -118,6 +122,9 @@ public class FoodServerlet extends HttpServlet {
 	            	return;
 		        }	
 				break;
+			default:
+				response.sendError(HttpServletResponse.SC_NOT_FOUND);
+            	return;
 		}
 		
 	}

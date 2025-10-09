@@ -52,6 +52,7 @@
             </table>
         </div>
         <% } %>
+        <a href="home">Go back to Home</a>
     </div>
 </div>
 </body>

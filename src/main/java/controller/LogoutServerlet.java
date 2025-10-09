@@ -1,34 +1,25 @@
 package controller;
 
-import jakarta.servlet.RequestDispatcher;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.annotation.WebServlet;
 import jakarta.servlet.http.HttpServlet;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
-import model.FoodDAO;
-import utils.DataSourceUtil;
+import jakarta.servlet.http.HttpSession;
 
 import java.io.IOException;
-import java.sql.Connection;
-import java.sql.PreparedStatement;
-import java.sql.ResultSet;
-import java.util.ArrayList;
-import java.util.List;
-
-import javax.sql.DataSource;
 
 /**
- * Servlet implementation class HomeServerlet
+ * Servlet implementation class LogoutServerlet
  */
-@WebServlet("/home")
-public class HomeServerlet extends HttpServlet {
+@WebServlet("/logout")
+public class LogoutServerlet extends HttpServlet {
 	private static final long serialVersionUID = 1L;
        
     /**
      * @see HttpServlet#HttpServlet()
      */
-    public HomeServerlet() {
+    public LogoutServerlet() {
         super();
         // TODO Auto-generated constructor stub
     }
@@ -37,11 +28,10 @@ public class HomeServerlet extends HttpServlet {
 	 * @see HttpServlet#doGet(HttpServletRequest request, HttpServletResponse response)
 	 */
 	protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
-		
-		request.setAttribute("type_user", "guest");
-        RequestDispatcher rd = request.getRequestDispatcher("index.jsp");
-        rd.forward(request, response);
-        
+		HttpSession session = request.getSession(false);
+        if (session != null) session.invalidate(); // clear session
+        request.setAttribute("type_user", "guest");
+        response.sendRedirect(request.getContextPath() + "/home");
 	}
 
 //	/**
