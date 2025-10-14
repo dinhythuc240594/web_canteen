@@ -13,6 +13,7 @@ CREATE TABLE IF NOT EXISTS User (
     username VARCHAR(50) NOT NULL UNIQUE,
     password VARCHAR(255) NOT NULL,
     role ENUM('admin', 'staff', 'customer') DEFAULT 'customer', -- admin = quản trị, staff = quầy, customer = khách
+    status BOOLEAN,
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 );
 

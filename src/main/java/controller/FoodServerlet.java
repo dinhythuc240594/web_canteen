@@ -8,8 +8,11 @@ import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.servlet.http.HttpSession;
 import model.FoodDAO;
+import model.Page;
+import model.PageRequest;
 import serviceimpl.FoodServiceImpl;
 import utils.DataSourceUtil;
+import utils.RequestUtil;
 
 import java.io.IOException;
 import java.util.List;
@@ -23,6 +26,7 @@ import javax.sql.DataSource;
 public class FoodServerlet extends HttpServlet {
 
 	private FoodServiceImpl foodServiceImpl;
+	private int PAGE_SIZE = 25;
 	
 	@Override
 	public void init() throws ServletException {
@@ -35,14 +39,12 @@ public class FoodServerlet extends HttpServlet {
 	 */
 	protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
 		
-		String action = request.getParameter("action");
-		System.out.println("redirect page: " + action);
-		if (action == null) {
-			action = "list";
-		}
-		
-		int idParam = 0;
-		String id = request.getParameter("id");
+		String action = RequestUtil.getString(request, "action", "list");
+		String keyword = RequestUtil.getString(request, "keyword", "");
+		String sortField = RequestUtil.getString(request, "sortField", "id");
+		String orderField = RequestUtil.getString(request, "orderField", "DESC");
+		int page = RequestUtil.getInt(request, "page", 1);
+		int id = RequestUtil.getInt(request, "id", 1);
 		FoodDAO foundFood = null;
 
 		HttpSession session = request.getSession();
@@ -52,8 +54,11 @@ public class FoodServerlet extends HttpServlet {
 		RequestDispatcher rd;
 		switch (action) {
 			case "list":
-				List<FoodDAO> lstFood = this.foodServiceImpl.findAll();
-		        request.setAttribute("foods", lstFood);
+				
+				PageRequest pageReq = new PageRequest(page, PAGE_SIZE, sortField, orderField, keyword);
+				Page<FoodDAO> pageFood = this.foodServiceImpl.findAll(pageReq);
+		        request.setAttribute("pageFood", pageFood);
+		        request.setAttribute("pageReq", pageReq);
 		        rd = request.getRequestDispatcher("/foodTemplates/food-list.jsp");
 		        rd.forward(request, response);
 		        break;
@@ -64,15 +69,8 @@ public class FoodServerlet extends HttpServlet {
 		        break;
 
 			case "detail":
-
-				if (id == null) {
-		        	response.sendError(HttpServletResponse.SC_NOT_FOUND);
-		        	return;
-		        }
-		        
-				idParam = Integer.parseInt(id);
 				
-		        foundFood = this.foodServiceImpl.findById(idParam);
+		        foundFood = this.foodServiceImpl.findById(id);
 
 		        if (foundFood != null) {
 		        	request.setAttribute("food", foundFood);
@@ -85,15 +83,8 @@ public class FoodServerlet extends HttpServlet {
 		        break;    
 		        
 			case "update":
-
-				if (id == null) {
-		        	response.sendError(HttpServletResponse.SC_NOT_FOUND);
-		        	return;
-		        }
-		        
-				idParam = Integer.parseInt(id);
 				
-		        foundFood = this.foodServiceImpl.findById(idParam);
+		        foundFood = this.foodServiceImpl.findById(id);
 
 		        if (foundFood != null) {
 		        	request.setAttribute("food", foundFood);
@@ -106,15 +97,8 @@ public class FoodServerlet extends HttpServlet {
 		        break;
 			
 			case "delete":
-		        
-				if (id == null) {
-		        	response.sendError(HttpServletResponse.SC_NOT_FOUND);
-		        	return;
-		        }
-		        
-				idParam = Integer.parseInt(id);
 				
-		        boolean isDelete = this.foodServiceImpl.delete(idParam);
+		        boolean isDelete = this.foodServiceImpl.delete(id);
 		        if(isDelete) {
 		        	response.sendRedirect(request.getContextPath()+"/foods?action=list");
 		        }else {
