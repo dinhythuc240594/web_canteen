@@ -43,31 +43,36 @@ public class AuthFilter extends HttpFilter implements Filter {
 		HttpServletRequest req  = (HttpServletRequest) request;
         HttpServletResponse resp = (HttpServletResponse) response;
 
-        resp.setHeader("Cache-Control", "no-cache, no-store, must-revalidate");
-        resp.setHeader("Pragma", "no-cache");
-        resp.setDateHeader("Expires", 0);
-
-        HttpSession ses = req.getSession(false);
-
         String path = req.getRequestURI().substring(req.getContextPath().length());
-        boolean loggedIn = (ses != null && ses.getAttribute("username") != null);
-        
-        boolean isLoginRequest = path.equals("/login") 
-        		|| path.equals("/login.jsp")
-        		|| path.equals("/home")
-        		|| path.equals("/");
-        System.out.println(path.equals("/"));
-        System.out.println(loggedIn);
-        if (loggedIn && isLoginRequest) {
-            resp.sendRedirect(req.getContextPath() + "/foods");
-            return;
+        System.out.println(path);
+        if(path.equals("/")) {
+        	System.out.println("run home");
+            resp.sendRedirect(req.getContextPath() + "/home");
+            return;        	
         }
         
-        if (!loggedIn && !isLoginRequest) {
-        	String next = req.getRequestURI();
-        	resp.sendRedirect(req.getContextPath() + "/login?next=" + next);
-            return;
-        }
+//      resp.setHeader("Cache-Control", "no-cache, no-store, must-revalidate");
+//      resp.setHeader("Pragma", "no-cache");
+//      resp.setDateHeader("Expires", 0);
+//
+//      HttpSession ses = req.getSession(false);        
+        
+//        boolean loggedIn = (ses != null && ses.getAttribute("username") != null);
+//        String path = req.getRequestURI().substring(req.getContextPath().length());
+//        boolean isLoginRequest = path.equals("/login") 
+//        		|| path.equals("/login.jsp")
+//        		|| path.equals("/home");
+//        
+//        if (loggedIn && isLoginRequest) {
+//            resp.sendRedirect(req.getContextPath() + "/foods");
+//            return;
+//        }
+//        
+//        if (!loggedIn && !isLoginRequest) {
+//        	String next = req.getRequestURI();
+//        	resp.sendRedirect(req.getContextPath() + "/login?next=" + next);
+//            return;
+//        }
         
 		// pass the request along the filter chain
 		chain.doFilter(request, response);

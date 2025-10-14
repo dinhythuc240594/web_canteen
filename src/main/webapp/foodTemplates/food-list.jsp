@@ -1,5 +1,6 @@
 <%@ page language="java" contentType="text/html; charset=UTF-8"
     pageEncoding="UTF-8"%>
+    
 <!DOCTYPE html>
 <html>
 <head>
@@ -19,7 +20,16 @@
     <div class = "rowtable-reponsive">
         <h2>List</h2>
         <%
-            java.util.List<model.FoodDAO> foods = (java.util.List<model.FoodDAO>) request.getAttribute("foods");
+            
+        	model.Page<model.FoodDAO> pageFood = (model.Page<model.FoodDAO>) request.getAttribute("pageFood");
+        	java.util.List<model.FoodDAO> foods = (java.util.List<model.FoodDAO>) pageFood.getData();
+        	
+        	model.PageRequest pageReq = (model.PageRequest) request.getAttribute("pageReq");
+        	String keyword = pageReq.getKeyword();
+        	String orderField = pageReq.getOrderField();
+        	String sortField = pageReq.getSortField();
+        	int totalPage = pageFood.getTotalPage();
+        	
             if (foods != null) {
         %>
         <a type="button" class="btn btn-danger" style="background-color: green" href="foods?&action=create">New</a>
