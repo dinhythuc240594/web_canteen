@@ -44,35 +44,30 @@ public class AuthFilter extends HttpFilter implements Filter {
         HttpServletResponse resp = (HttpServletResponse) response;
 
         String path = req.getRequestURI().substring(req.getContextPath().length());
-        System.out.println(path);
         if(path.equals("/")) {
-        	System.out.println("run home");
             resp.sendRedirect(req.getContextPath() + "/home");
             return;        	
         }
-        
-//      resp.setHeader("Cache-Control", "no-cache, no-store, must-revalidate");
-//      resp.setHeader("Pragma", "no-cache");
-//      resp.setDateHeader("Expires", 0);
-//
-//      HttpSession ses = req.getSession(false);        
-        
-//        boolean loggedIn = (ses != null && ses.getAttribute("username") != null);
-//        String path = req.getRequestURI().substring(req.getContextPath().length());
-//        boolean isLoginRequest = path.equals("/login") 
-//        		|| path.equals("/login.jsp")
-//        		|| path.equals("/home");
-//        
-//        if (loggedIn && isLoginRequest) {
-//            resp.sendRedirect(req.getContextPath() + "/foods");
-//            return;
-//        }
-//        
-//        if (!loggedIn && !isLoginRequest) {
-//        	String next = req.getRequestURI();
-//        	resp.sendRedirect(req.getContextPath() + "/login?next=" + next);
-//            return;
-//        }
+       
+        resp.setHeader("Cache-Control", "no-cache, no-store, must-revalidate");
+        resp.setHeader("Pragma", "no-cache");
+        resp.setDateHeader("Expires", 0);
+
+        HttpSession ses = req.getSession(false);        
+        System.out.println("filter path:  " + path);
+
+      boolean is_login = (boolean) (ses != null && ses.getAttribute("is_login") != null) || false;
+      
+      String username = "";
+      String type_user = "";
+      if (ses != null) {
+          username = (String) (ses.getAttribute("username"));
+          type_user = (String) (ses.getAttribute("type_user"));  
+      }
+
+      request.setAttribute("is_login", is_login);
+      request.setAttribute("username", username);
+      request.setAttribute("type_user", type_user);
         
 		// pass the request along the filter chain
 		chain.doFilter(request, response);

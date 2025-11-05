@@ -7,6 +7,7 @@ import jakarta.servlet.http.HttpServlet;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.servlet.http.HttpSession;
+import model.UserDAO;
 import serviceimpl.UserServiceImpl;
 import utils.DataSourceUtil;
 
@@ -21,6 +22,10 @@ import com.mysql.cj.Session;
  */
 @WebServlet("/login")
 public class LoginServerlet extends HttpServlet {
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 6032073007253274585L;
 	private UserServiceImpl userSerImpl;
 
 	@Override
@@ -47,7 +52,10 @@ public class LoginServerlet extends HttpServlet {
 		HttpSession session = request.getSession();
 		
 		if(isLogin) {
-			session.setAttribute("username", username);
+			UserDAO user = this.userSerImpl.getUser(username);
+			session.setAttribute("is_login", isLogin);
+			session.setAttribute("username", user.getUsername());
+			session.setAttribute("type_user", user.getRole());
 			response.sendRedirect(request.getContextPath()+"/foods?action=list");
 		}
 		else {

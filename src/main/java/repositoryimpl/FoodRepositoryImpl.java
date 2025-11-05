@@ -23,7 +23,7 @@ public class FoodRepositoryImpl implements FoodRepository{
 	public FoodDAO findById(int id) {
         int idFood = id;
         FoodDAO foundFood = null;
-        String sql = "SELECT id, name, price, inventory FROM food where id = ?";
+        String sql = "SELECT id, name, price, inventory, image, description, category_id FROM foods where id = ?";
         try (
         	Connection conn = ds.getConnection();
              PreparedStatement ps = conn.prepareStatement(sql);) {
@@ -36,6 +36,8 @@ public class FoodRepositoryImpl implements FoodRepository{
                 String nameFood = rs.getString("name");
                 double priceFood = rs.getDouble("price");
                 int inventoryFood  = rs.getInt("inventory");
+                String imageFood = rs.getString("image");
+                String descriptionFood = rs.getString("description");
 
                 foundFood = new FoodDAO(idFood, nameFood, priceFood, inventoryFood);
                 break;
@@ -49,7 +51,7 @@ public class FoodRepositoryImpl implements FoodRepository{
 
 	@Override
 	public boolean create(String nameFood, double priceFood, int inventoryFood) {
-        String sql = "INSERT INTO food (name, price, inventory) VALUES (?,?,?)";
+        String sql = "INSERT INTO foods (name, price, inventory) VALUES (?,?,?)";
         try (
         	Connection conn = ds.getConnection();
             PreparedStatement ps = conn.prepareStatement(sql);) {
@@ -65,7 +67,7 @@ public class FoodRepositoryImpl implements FoodRepository{
 
 	@Override
 	public boolean update(int id, String nameFood, double priceFood, int inventoryFood) {
-        String sql = "UPDATE food SET name = ?, price = ?, inventory = ? WHERE id = ?";
+        String sql = "UPDATE foods SET name = ?, price = ?, inventory = ? WHERE id = ?";
       try (
       	Connection conn = ds.getConnection();
           PreparedStatement ps = conn.prepareStatement(sql);) {
@@ -83,7 +85,7 @@ public class FoodRepositoryImpl implements FoodRepository{
 
 	@Override
 	public boolean delete(int id) {
-      String sql = "DELETE FROM food WHERE id = ?";
+      String sql = "DELETE FROM foods WHERE id = ?";
       try (Connection conn = ds.getConnection();
            PreparedStatement ps = conn.prepareStatement(sql)) {
       	 ps.setInt(1, id); 
@@ -104,7 +106,7 @@ public class FoodRepositoryImpl implements FoodRepository{
         String sortField = pageRequest.getSortField();
         String orderField = pageRequest.getOrderField();
         
-        String sql = "SELECT id, name, price, inventory FROM food ";
+        String sql = "SELECT id, name, price, inventory FROM foods ";
         if(keyword != "") {
         	sql += "WHERE name LIKE ? ";
         }
@@ -140,7 +142,7 @@ public class FoodRepositoryImpl implements FoodRepository{
 
 	@Override
 	public int count(String keyword) {
-        String sql = "SELECT COUNT(1) FROM food";
+        String sql = "SELECT COUNT(1) FROM foods";
         int total = 0;
         
         boolean hasKeywords = keyword != null && !keyword.trim().isEmpty();

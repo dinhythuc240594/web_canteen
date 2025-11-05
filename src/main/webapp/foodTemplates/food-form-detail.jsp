@@ -2,14 +2,7 @@
 <html>
 <head>
 	<title>Update Food</title>
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
-
-    <!-- Bootstrap JS (optional, cho các component cần JS) -->
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
-    <style>
-        .grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 20px; }
-        .book { border: 1px solid #ccc; padding: 10px; text-align: center; }
-    </style>
+	<jsp:include page="/WEB-INF/jsp/common/head.jsp" />
 </head>
 <body>
 	<h1>Edit</h1>

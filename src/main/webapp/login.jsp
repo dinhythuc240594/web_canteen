@@ -3,96 +3,57 @@
 <!DOCTYPE html>
 <html>
 <head>
-<meta charset="UTF-8">
-<title>Login</title>
-<meta name="viewport" content="width=device-width, initial-scale=1">
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
-
-    <!-- Bootstrap JS (optional, cho các component cần JS) -->
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
-<style>
-body {font-family: Arial, Helvetica, sans-serif;}
-form {border: 3px solid #f1f1f1;}
-
-input[type=text], input[type=password] {
-  width: 100%;
-  padding: 12px 20px;
-  margin: 8px 0;
-  display: inline-block;
-  border: 1px solid #ccc;
-  box-sizing: border-box;
-}
-
-button {
-  background-color: #04AA6D;
-  color: white;
-  padding: 14px 20px;
-  margin: 8px 0;
-  border: none;
-  cursor: pointer;
-  width: 100%;
-}
-
-button:hover {
-  opacity: 0.8;
-}
-
-.cancelbtn {
-  width: auto;
-  padding: 10px 18px;
-  background-color: #f44336;
-}
-
-.imgcontainer {
-  text-align: center;
-  margin: 24px 0 12px 0;
-}
-
-img.avatar {
-  width: 40%;
-  border-radius: 50%;
-}
-
-.container {
-  padding: 16px;
-}
-
-span.psw {
-  float: right;
-  padding-top: 16px;
-}
-
-/* Change styles for span and cancel button on extra small screens */
-@media screen and (max-width: 300px) {
-  span.psw {
-     display: block;
-     float: none;
-  }
-  .cancelbtn {
-     width: 100%;
-  }
-}
-</style>
+    <title>Login</title>
+    <jsp:include page="/WEB-INF/jsp/common/head.jsp" />
 </head>
 <body>
-<h2>Login Form</h2>
-<% String error = (String) request.getAttribute("error"); %>
-<% if (error != null) { %>
-<div class="alert alert-danger" role="alert">
-  <%= error %>
-</div>
-<% } %>
-<form action="login" method="post">
-  <div class="container">
-    <label for="uname"><b>User name</b></label>
-    <input type="text" placeholder="Enter Username" name="username" required>
 
-    <label for="psw"><b>Password</b></label>
-    <input type="password" placeholder="Enter Password" name="password" required>
-        
-    <button type="submit">Login</button>
-  </div>
-</form>
+    <div id="header">
+        <jsp:include page="/WEB-INF/jsp/common/header.jsp" />
+    </div>
+
+	<div class="tab-content">
+		<% String error = (String) request.getAttribute("error"); %>
+		<% if (error != null) { %>
+		<div class="alert alert-danger" role="alert">
+		  <%= error %>
+		</div>
+		<% } %>
+		<div class="container">
+		    <div class="row justify-content-center mt-5">
+		        <div class="col-md-6">
+		            <div class="card">
+		                <div class="card-header bg-primary text-white">
+		                    <h4 class="mb-0">Login</h4>
+		                </div>
+		                <div class="card-body">
+		                    <form action="login" method="post">
+		                        <div class="mb-3">
+		                            <label for="email" class="form-label">User name</label>
+		                            <input type="text" class="form-control" id="username" name="username" placeholder="Enter username" required>
+		                        </div>
+		                        <div class="mb-3">
+		                            <label for="password" class="form-label">Password</label>
+		                            <input type="password" class="form-control" id="password" name="password" placeholder="Enter your password" required>
+		                        </div>
+		                        <div class="mb-3 form-check">
+		                            <input type="checkbox" class="form-check-input" id="rememberMe">
+		                            <label class="form-check-label" for="rememberMe">Remember me</label>
+		                        </div>
+		                        <button type="submit" class="btn btn-primary">Login</button>
+		                    </form>
+		                </div>
+		            </div>
+		        </div>
+		    </div>
+		</div>
+	</div>
+
+    <div id="footer">
+        <jsp:include page="/WEB-INF/jsp/common/footer.jsp" />
+    </div>
 
 </body>
+
 </html>
+

@@ -12,6 +12,6 @@
 <body>
     <h1>404 - Page Not Found</h1>
     <p>Sorry, the page you are looking for does not exist.</p>
-    <a href="index.jsp">Go back to Home</a>
+    <a href="home">Go back to Home</a>
 </body>
 </html>

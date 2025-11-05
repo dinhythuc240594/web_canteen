@@ -37,8 +37,6 @@ public class HomeServerlet extends HttpServlet {
 	 * @see HttpServlet#doGet(HttpServletRequest request, HttpServletResponse response)
 	 */
 	protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
-		
-		request.setAttribute("type_user", "guest");
         RequestDispatcher rd = request.getRequestDispatcher("index.jsp");
         rd.forward(request, response);
         

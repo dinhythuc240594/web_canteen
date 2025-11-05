@@ -2,8 +2,7 @@
 <html>
 <head>
     <title>Home</title>
-	<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
-	<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+    <jsp:include page="/WEB-INF/jsp/common/head.jsp" />
 </head>
 <body>
 
@@ -17,11 +16,6 @@
     </div>
 
 	<div id="content">
-	    <% if(type_user == "guest"){ %>
-			<a href="login">Login</a><br />	
-		<% } else { %>
-			<a href="logout">Logout</a><br />	
-		<% } %>
 	</div>
 
     <div id="footer">

@@ -15,16 +15,14 @@ import utils.DataSourceUtil;
 import utils.RequestUtil;
 
 import java.io.IOException;
-import java.util.List;
 
 import javax.sql.DataSource;
 
-/**
- * Servlet implementation class FoodServerlet
- */
+
 @WebServlet("/foods")
 public class FoodServerlet extends HttpServlet {
 
+	private static final long serialVersionUID = 1L;
 	private FoodServiceImpl foodServiceImpl;
 	private int PAGE_SIZE = 25;
 	
