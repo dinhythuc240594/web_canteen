@@ -7,12 +7,15 @@ import jakarta.servlet.ServletException;
 import jakarta.servlet.ServletRequest;
 import jakarta.servlet.ServletResponse;
 import jakarta.servlet.annotation.WebFilter;
+import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpFilter;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.servlet.http.HttpSession;
+import utils.SHA256;
 
 import java.io.IOException;
+import java.util.UUID;
 
 /**
  * Servlet Filter implementation class AuthFilter
@@ -56,23 +59,23 @@ public class AuthFilter extends HttpFilter implements Filter {
         HttpSession ses = req.getSession(false);        
         System.out.println("filter path:  " + path);
 
-      boolean is_login = (boolean) (ses != null && ses.getAttribute("is_login") != null) || false;
+        boolean is_login = (boolean) (ses != null && ses.getAttribute("is_login") != null) || false;
       
-      String username = "";
-      String type_user = "";
-      if (ses != null) {
+        String username = "";
+        String type_user = "";
+        if (ses != null) {
           username = (String) (ses.getAttribute("username"));
           type_user = (String) (ses.getAttribute("type_user"));  
-      }
+        }
 
-      request.setAttribute("is_login", is_login);
-      request.setAttribute("username", username);
-      request.setAttribute("type_user", type_user);
+        request.setAttribute("is_login", is_login);
+        request.setAttribute("username", username);
+        request.setAttribute("type_user", type_user);
         
-		// pass the request along the filter chain
-		chain.doFilter(request, response);
-	}
-
+        chain.doFilter(request, response);
+     
+	}	
+	
 	/**
 	 * @see Filter#init(FilterConfig)
 	 */
