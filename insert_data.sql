@@ -31,3 +31,28 @@ INSERT INTO food_categories (name, description) VALUES
 -- 2. Đồ uống
 ('Đồ Uống Giải Khát', 'Nước ngọt có gas, nước đóng chai.'),
 ('Cà Phê/Trà', 'Các loại cà phê, trà nóng và lạnh.');
+
+INSERT INTO canteen_db.foods (category_id, image, name, price, inventory, stall_id, description, is_available, updated_at, promotion) VALUES
+-- Món category_id 1: Cơm (Phân bổ cho stall_id 1)
+(1, NULL, 'Cơm Gà Xối Mỡ Đặc Biệt', 45000.00, 50, 6, 'Gà xối mỡ giòn rụm, ăn kèm cơm trắng và dưa góp.', TRUE, NOW(), 10),
+(1, NULL, 'Cơm Sườn Bì Chả', 40000.00, 60, 6, 'Sườn nướng mật ong, bì, chả trứng và nước sốt đặc trưng.', TRUE, NOW(), 10),
+(1, NULL, 'Cơm Thịt Kho Trứng', 35000.00, 45, 6, 'Thịt ba chỉ kho tàu mềm rục với trứng cút.', TRUE, NOW(), 15),
+(1, NULL, 'Cơm Canh Chua Cá Lóc', 55000.00, 30, 6, 'Canh chua cá lóc miền Tây, vị chua ngọt đậm đà.', TRUE, NOW(), 15),
+(1, NULL, 'Cơm Tấm Bì Chả', 38000.00, 55, 6, 'Cơm tấm Sài Gòn truyền thống, không có sườn.', TRUE, NOW(), 20),
+(1, NULL, 'Cơm Trắng Đơn Giản', 10000.00, 999, 6, 'Chỉ có cơm trắng.', TRUE, NOW(), 20),
+(1, NULL, 'Cơm Xào Bò Lúc Lắc', 60000.00, 25, 6, 'Thịt bò xào với khoai tây và hành tây, sốt tiêu đen.', TRUE, NOW(), 25),
+(1, NULL, 'Cơm Kho Quẹt Tôm Thịt', 42000.00, 40, 6, 'Thịt kho quẹt ăn kèm rau luộc theo ngày.', TRUE, NOW(), 25),
+(1, NULL, 'Cơm Chiên Hải Sản', 48000.00, 35, 6, 'Cơm chiên tôm, mực, rau củ.', TRUE, NOW(), 30),
+(1, NULL, 'Cơm Thập Cẩm', 45000.00, 50, 6, 'Phần cơm tự chọn 3 món mặn/xào.', TRUE, NOW(), 30),
+
+-- Món category_id 2: Phở/Bún/Mì (Phân bổ cho stall_id 2)
+(2, NULL, 'Phở Bò Tái Nạm', 50000.00, 70, 5, 'Phở bò Hà Nội truyền thống, nước dùng thanh ngọt.', TRUE, NOW(), 5),
+(2, NULL, 'Bún Chả Hà Nội', 45000.00, 65, 5, 'Thịt nướng than hoa, chả viên, bún rối và rau thơm.', TRUE, NOW(), 5),
+(2, NULL, 'Mì Quảng Gà', 55000.00, 40, 5, 'Mì Quảng với thịt gà, trứng cút và đậu phộng.', TRUE, NOW(), 10),
+(2, NULL, 'Bún Bò Huế Đặc Biệt', 50000.00, 50, 5, 'Bún bò cay, chả cua, móng giò và tiết.', TRUE, NOW(), 10),
+(2, NULL, 'Phở Gà Lá Chanh', 45000.00, 60, 5, 'Phở với thịt gà xé và lá chanh thơm lừng.', TRUE, NOW(), 15),
+(2, NULL, 'Hủ Tiếu Nam Vang Khô', 52000.00, 35, 5, 'Hủ tiếu khô trộn với tôm, thịt xá xíu, gan.', TRUE, NOW(), 15),
+(2, NULL, 'Bún Riêu Cua', 40000.00, 55, 5, 'Bún riêu cua đồng, có thêm đậu hũ và huyết.', TRUE, NOW(), 12),
+(2, NULL, 'Mì Trứng Xào Giòn', 45000.00, 30, 5, 'Mì được chiên giòn, ăn kèm rau và thịt xào.', TRUE, NOW(), 12),
+(2, NULL, 'Bánh Canh Cua', 58000.00, 25, 5, 'Bánh canh bột lọc/bột gạo với thịt cua.', TRUE, NOW(), 10),
+(2, NULL, 'Phở Chay Rau Củ', 35000.00, 20, 5, 'Phở chay thanh đạm, nước dùng từ rau củ.', TRUE, NOW(), 10)

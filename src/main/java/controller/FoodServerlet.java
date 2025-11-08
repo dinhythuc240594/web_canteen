@@ -44,10 +44,6 @@ public class FoodServerlet extends HttpServlet {
 		int page = RequestUtil.getInt(request, "page", 1);
 		int id = RequestUtil.getInt(request, "id", 1);
 		FoodDAO foundFood = null;
-
-		HttpSession session = request.getSession();
-		request.setAttribute("username", session.getAttribute("username"));
-//		request.setAttribute("role", session.getAttribute("role"));
 		
 		RequestDispatcher rd;
 		switch (action) {

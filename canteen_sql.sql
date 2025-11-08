@@ -100,3 +100,5 @@ CREATE TABLE IF NOT EXISTS statistics (
 CREATE INDEX idx_orders_user_status ON orders (user_id, status);
 CREATE INDEX idx_orders_stall_date ON orders (stall_id, created_at);
 CREATE INDEX idx_foods_stall_available ON foods (stall_id, is_available);
+
+ALTER TABLE foods ADD COLUMN promotion DECIMAL(5, 2) DEFAULT 0.00 COMMENT 'Phần trăm giảm giá (0.00 đến 99.99)';

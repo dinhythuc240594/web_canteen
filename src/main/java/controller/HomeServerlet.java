@@ -7,7 +7,11 @@ import jakarta.servlet.http.HttpServlet;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import model.FoodDAO;
+import model.Page;
+import model.PageRequest;
+import serviceimpl.FoodServiceImpl;
 import utils.DataSourceUtil;
+import utils.RequestUtil;
 
 import java.io.IOException;
 import java.sql.Connection;
@@ -33,11 +37,37 @@ public class HomeServerlet extends HttpServlet {
         // TODO Auto-generated constructor stub
     }
 
+	private FoodServiceImpl foodServiceImpl;
+	private int PAGE_SIZE = 25;
+	
+	@Override
+	public void init() throws ServletException {
+		DataSource ds = DataSourceUtil.getDataSource();
+		this.foodServiceImpl = new FoodServiceImpl(ds);
+	}
+    
 	/**
 	 * @see HttpServlet#doGet(HttpServletRequest request, HttpServletResponse response)
 	 */
 	protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
-        RequestDispatcher rd = request.getRequestDispatcher("index.jsp");
+		
+		String keyword = RequestUtil.getString(request, "keyword", "");
+		String sortField = RequestUtil.getString(request, "sortField", "name");
+		String orderField = RequestUtil.getString(request, "orderField", "ASC");
+		int page = RequestUtil.getInt(request, "page", 1);
+		
+		PageRequest pageReq = new PageRequest(page, PAGE_SIZE, sortField, orderField, keyword);
+		Page<FoodDAO> pageFood = this.foodServiceImpl.findAll(pageReq);
+		
+		List<FoodDAO> newFoods = this.foodServiceImpl.newFoods();
+		List<FoodDAO> promotionFoods = this.foodServiceImpl.promotionFoods();
+		
+        request.setAttribute("pageFood", pageFood);
+        request.setAttribute("newFoods", newFoods);
+        request.setAttribute("promotionFoods", promotionFoods);
+        request.setAttribute("pageReq", pageReq);
+		
+        RequestDispatcher rd = request.getRequestDispatcher("home.jsp");
         rd.forward(request, response);
 	}
 

@@ -44,7 +44,7 @@ public class FoodRepositoryImpl implements FoodRepository{
             }
 
         } catch (Exception e) {
-            e.printStackTrace();
+        	System.err.println("Lỗi findById: " + e.getMessage());
         }
         return foundFood;
 	}
@@ -61,7 +61,8 @@ public class FoodRepositoryImpl implements FoodRepository{
             ps.executeUpdate();
             return true;
 	    } catch (Exception e) {
-	      throw new RuntimeException(e);
+	    	System.err.println("Lỗi create: " + e.getMessage());
+	    	return false;
 	    }
 	}
 
@@ -79,7 +80,8 @@ public class FoodRepositoryImpl implements FoodRepository{
           ps.executeUpdate();
           return true;
 	  } catch (Exception e) {
-	          throw new RuntimeException(e);
+		  System.err.println("Lỗi update: " + e.getMessage());
+		  return false;
 	  }
 	}
 
@@ -88,11 +90,12 @@ public class FoodRepositoryImpl implements FoodRepository{
       String sql = "DELETE FROM foods WHERE id = ?";
       try (Connection conn = ds.getConnection();
            PreparedStatement ps = conn.prepareStatement(sql)) {
-      	 ps.setInt(1, id); 
-           ps.executeUpdate();
-           return true;
+      	 	ps.setInt(1, id); 
+      	 	ps.executeUpdate();
+      	 	return true;
 		} catch (Exception e) {
-          throw new RuntimeException(e);
+			System.err.println("Lỗi delete: " + e.getMessage());
+			return false;
       }
 	}
 
@@ -135,7 +138,7 @@ public class FoodRepositoryImpl implements FoodRepository{
                 foods.add(new FoodDAO(id, name, price, inventory));
             }
         } catch (Exception e) {
-            e.printStackTrace();
+        	System.err.println("Lỗi findAll: " + e.getMessage());
         }
         return foods;
 	}
@@ -165,11 +168,61 @@ public class FoodRepositoryImpl implements FoodRepository{
             }
 
         } catch (Exception e) {
-            System.err.println("Error when count: " + e.getMessage());
-            e.printStackTrace();
+        	System.err.println("Lỗi count: " + e.getMessage());
             return -1;
         }
         
         return total;
+	}
+
+	@Override
+	public List<FoodDAO> newFoods() {
+        List<FoodDAO> foods = new ArrayList<>();
+        
+        String sql = "SELECT id, name, price, inventory, promotion FROM foods ";
+        sql += "ORDER BY %s %s LIMIT 8";
+        sql = String.format(sql, "promotion", "ASC");
+        try (Connection conn = ds.getConnection();
+             PreparedStatement ps = conn.prepareStatement(sql);) {
+
+        	ResultSet rs = ps.executeQuery();
+            while (rs.next()) {
+                int id = rs.getInt("id");
+                String name = rs.getString("name");
+                double price = rs.getDouble("price");
+                int inventory = rs.getInt("inventory");
+                
+
+                foods.add(new FoodDAO(id, name, price, inventory));
+            }
+        } catch (Exception e) {
+        	System.err.println("Lỗi newFoods: " + e.getMessage());
+        }
+        return foods;
+	}
+
+	@Override
+	public List<FoodDAO> promotionFoods() {
+        List<FoodDAO> foods = new ArrayList<>();
+        
+        String sql = "SELECT id, name, price, inventory FROM foods ";
+        sql += "ORDER BY %s %s LIMIT 8";
+        sql = String.format(sql, "updated_at", "ASC");
+        try (Connection conn = ds.getConnection();
+             PreparedStatement ps = conn.prepareStatement(sql);) {
+
+        	ResultSet rs = ps.executeQuery();
+            while (rs.next()) {
+                int id = rs.getInt("id");
+                String name = rs.getString("name");
+                double price = rs.getDouble("price");
+                int inventory = rs.getInt("inventory");
+
+                foods.add(new FoodDAO(id, name, price, inventory));
+            }
+        } catch (Exception e) {
+        	System.err.println("Lỗi promotionFoods: " + e.getMessage());
+        }
+        return foods;
 	}
 }

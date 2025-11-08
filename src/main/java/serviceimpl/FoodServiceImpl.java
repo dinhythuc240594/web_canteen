@@ -42,14 +42,22 @@ public class FoodServiceImpl implements FoodService {
 
 	@Override
 	public boolean delete(int id) {
-		// TODO Auto-generated method stub
-		return false;
+		return this.foodRepository.delete(id);
 	}
 
 	@Override
 	public int count(String keyword) {
-		// TODO Auto-generated method stub
-		return 0;
+		return this.foodRepository.count(keyword);
+	}
+
+	@Override
+	public List<FoodDAO> newFoods() {
+		return this.foodRepository.newFoods();
+	}
+
+	@Override
+	public List<FoodDAO> promotionFoods() {
+		return this.foodRepository.promotionFoods();
 	}
 
 }
