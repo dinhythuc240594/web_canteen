@@ -21,7 +21,7 @@ public class TokenRepositoryImpl implements TokenRepository {
 
 	@Override
 	public void updateTokenHash(String series, String newToken) {
-		String sql = "UPDATE persistent_logins SET token_hash = ?, last_used = NOW() WHERE series = ?";
+		String sql = "UPDATE persistent_logins SET token_hash = ? WHERE series = ?";
 		
 		try (Connection conn = ds.getConnection();
 				PreparedStatement pstmt = conn.prepareStatement(sql)) {
@@ -40,18 +40,19 @@ public class TokenRepositoryImpl implements TokenRepository {
 	public TokenDAO findTokenByHash(String tokenHash) {
 		TokenDAO token = null;
 		String sql = "SELECT username, series, expires FROM persistent_logins WHERE token_hash = ?";
-	
 		try (Connection conn = ds.getConnection();
 	             PreparedStatement pstmt = conn.prepareStatement(sql)) {
 	            
 				pstmt.setString(1, tokenHash);
-	            
+
 	            try (ResultSet rs = pstmt.executeQuery()) {
 	                if (rs.next()) {
 	                	String username = rs.getString("username");
 	                	String series = rs.getString("series");
 	                	Timestamp expires = rs.getTimestamp("expires");
+	                	System.out.println("token get");
 	                    token = new TokenDAO(username, series, tokenHash, expires);
+	                    return token;
 	                }
 	            }
 	        } catch (SQLException e) {

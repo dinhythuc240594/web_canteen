@@ -60,9 +60,8 @@ public class LoginServerlet extends HttpServlet {
 		String rememberMe = request.getParameter("remember");
 		boolean isLogin = this.userSerImpl.isAuthenticated(username, password);
 		HttpSession session = request.getSession();
-		
+		UserDAO user = this.userSerImpl.getUser(username);
 		if(isLogin) {
-			UserDAO user = this.userSerImpl.getUser(username);
 			session.setAttribute("is_login", isLogin);
 			session.setAttribute("username", user.getUsername());
 			session.setAttribute("type_user", user.getRole());
@@ -95,8 +94,16 @@ public class LoginServerlet extends HttpServlet {
 			response.sendRedirect(request.getContextPath()+"/foods?action=list");
 		}
 		else {
-            request.setAttribute("error", "Login Failed, check user name and password");
-            request.getRequestDispatcher("Login.jsp").forward(request, response);
+			String msg_error = "";
+			if(user == null) {
+				msg_error = "Login Failed, check user name and password";
+			} else {
+				if(user.isStatus() == false) {
+					msg_error = "Login Failed, user blocked - please contact admin";
+				}
+			}
+            request.setAttribute("error", msg_error);
+            request.getRequestDispatcher("login.jsp").forward(request, response);
 		}
 	}
 
