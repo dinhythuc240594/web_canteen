@@ -150,3 +150,41 @@ body {
 .card {
 	border: none;
 }
+
+/* Hide scrollbar but keep functionality */
+.scrollbar-hide {
+	-ms-overflow-style: none;
+	scrollbar-width: none;
+}
+
+.scrollbar-hide::-webkit-scrollbar {
+	display: none;
+}
+
+/* Line clamp utilities */
+.line-clamp-1 {
+	overflow: hidden;
+	display: -webkit-box;
+	-webkit-box-orient: vertical;
+	-webkit-line-clamp: 1;
+}
+
+/* Smooth scrolling */
+html {
+	scroll-behavior: smooth;
+}
+
+/* Cart sidebar overlay */
+.cart-overlay {
+	background-color: rgba(0, 0, 0, 0.5);
+}
+
+/* Food card hover effects */
+.food-card-hover {
+	transition: all 0.3s ease;
+}
+
+.food-card-hover:hover {
+	transform: translateY(-2px);
+	box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+}
