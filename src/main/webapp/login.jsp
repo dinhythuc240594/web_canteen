@@ -1,59 +1,47 @@
-<%@ page language="java" contentType="text/html; charset=UTF-8"
-    pageEncoding="UTF-8"%>
+<%@ page language="java" contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
 <!DOCTYPE html>
 <html>
 <head>
-    <title>Login</title>
-    <jsp:include page="/WEB-INF/jsp/common/head.jsp" />
+	<title>Đăng nhập - FoodApp</title>
+	<jsp:include page="/WEB-INF/jsp/common/head.jsp" />
 </head>
 <body>
+<jsp:include page="/WEB-INF/jsp/common/header.jsp" />
 
-    <div id="header">
-        <jsp:include page="/WEB-INF/jsp/common/header.jsp" />
-    </div>
+<div class="container">
+	<div class="form-container">
+		<h2 class="form-title">Đăng nhập</h2>
 
-	<div class="tab-content">
 		<% String error = (String) request.getAttribute("error"); %>
 		<% if (error != null) { %>
 		<div class="alert alert-danger" role="alert">
-		  <%= error %>
+			<%= error %>
 		</div>
 		<% } %>
-		<div class="container">
-		    <div class="row justify-content-center mt-5">
-		        <div class="col-md-6">
-		            <div class="card">
-		                <div class="card-header bg-primary text-white">
-		                    <h4 class="mb-0">Login</h4>
-		                </div>
-		                <div class="card-body">
-		                    <form action="login" method="post">
-		                        <div class="mb-3">
-		                            <label for="email" class="form-label">User name</label>
-		                            <input type="text" class="form-control" id="username" name="username" placeholder="Enter username" required>
-		                        </div>
-		                        <div class="mb-3">
-		                            <label for="password" class="form-label">Password</label>
-		                            <input type="password" class="form-control" id="password" name="password" placeholder="Enter your password" required>
-		                        </div>
-		                        <div class="mb-3 form-check">
-		                            <input type="checkbox" class="form-check-input" id="remember" name="remember">
-		                            <label class="form-check-label" for="rememberMe">Remember me</label>
-		                        </div>
-		                        <button type="submit" class="btn btn-primary">Login</button>
-		                    </form>
-		                </div>
-		            </div>
-		        </div>
-		    </div>
-		</div>
+
+		<form action="login" method="post">
+			<div class="form-group mb-3">
+				<label for="login-username">Tên đăng nhập</label>
+				<input type="text" class="form-control" id="login-username"
+					   name="username" placeholder="Nhập tên đăng nhập" required>
+			</div>
+			<div class="form-group mb-3">
+				<label for="login-password">Mật khẩu</label>
+				<input type="password" class="form-control" id="login-password"
+					   name="password" placeholder="Nhập mật khẩu" required>
+			</div>
+			<div class="mb-3 form-check">
+				<input type="checkbox" class="form-check-input" id="rememberMe" name="rememberMe">
+				<label class="form-check-label" for="rememberMe">Ghi nhớ đăng nhập</label>
+			</div>
+			<button type="submit" class="btn btn-primary w-100">Đăng nhập</button>
+			<div class="form-link">
+				<a href="register">Chưa có tài khoản? Đăng ký ngay</a>
+			</div>
+		</form>
 	</div>
+</div>
 
-    <div id="footer">
-        <jsp:include page="/WEB-INF/jsp/common/footer.jsp" />
-    </div>
-
+<jsp:include page="/WEB-INF/jsp/common/footer.jsp" />
 </body>
-
 </html>
-

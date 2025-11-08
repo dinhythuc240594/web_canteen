@@ -3,22 +3,15 @@ package controller;
 import jakarta.servlet.RequestDispatcher;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.annotation.WebServlet;
-import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServlet;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.servlet.http.HttpSession;
 import model.UserDAO;
-import serviceimpl.TokenServiceImpl;
 import serviceimpl.UserServiceImpl;
 import utils.DataSourceUtil;
-import utils.SHA256;
 
 import java.io.IOException;
-import java.sql.Timestamp;
-import java.util.Calendar;
-import java.util.Date;
-import java.util.UUID;
 
 import javax.sql.DataSource;
 
@@ -34,13 +27,11 @@ public class LoginServerlet extends HttpServlet {
 	 */
 	private static final long serialVersionUID = 6032073007253274585L;
 	private UserServiceImpl userSerImpl;
-	private TokenServiceImpl tokenSerImpl;
 
 	@Override
 	public void init() throws ServletException {
 		DataSource ds = DataSourceUtil.getDataSource();
 		this.userSerImpl = new UserServiceImpl(ds);
-		this.tokenSerImpl = new TokenServiceImpl(ds);
 	}
 
 	/**
@@ -57,7 +48,6 @@ public class LoginServerlet extends HttpServlet {
 	protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
 		String username = request.getParameter("username");
 		String password = request.getParameter("password");
-		String rememberMe = request.getParameter("remember");
 		boolean isLogin = this.userSerImpl.isAuthenticated(username, password);
 		HttpSession session = request.getSession();
 		
@@ -66,32 +56,6 @@ public class LoginServerlet extends HttpServlet {
 			session.setAttribute("is_login", isLogin);
 			session.setAttribute("username", user.getUsername());
 			session.setAttribute("type_user", user.getRole());
-			
-			if (rememberMe != null && rememberMe.equals("on")) {
-				String rawToken = UUID.randomUUID().toString();
-				String tokenHash = SHA256.hash256(rawToken);
-				
-				Cookie rememberCookie = new Cookie("canteenSID", rawToken);
-				
-				int days = 30; 
-				Calendar calendar = Calendar.getInstance();
-				calendar.add(Calendar.DAY_OF_MONTH, days);
-				Date expirationDate = calendar.getTime();
-				long currentTimeMillis = System.currentTimeMillis();
-				long expirationTimeMillis = expirationDate.getTime();
-				long durationMillis = expirationTimeMillis - currentTimeMillis;
-				
-				int maxAgeInSeconds = (int) (durationMillis / 1000);
-	            rememberCookie.setMaxAge(maxAgeInSeconds); 
-	            rememberCookie.setHttpOnly(true);
-	            rememberCookie.setSecure(request.isSecure());
-	            rememberCookie.setPath("/");
-	            String series = UUID.randomUUID().toString();
-	            this.tokenSerImpl.saveToken(user.getUsername(), series, tokenHash, new Timestamp(expirationDate.getTime()));
-	            
-	            response.addCookie(rememberCookie);
-			}
-			
 			response.sendRedirect(request.getContextPath()+"/foods?action=list");
 		}
 		else {
