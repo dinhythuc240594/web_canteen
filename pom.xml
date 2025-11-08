@@ -46,11 +46,15 @@
     </dependencies>
 
     <build>
+        <finalName>webcanteen</finalName>
         <plugins>
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-war-plugin</artifactId>
                 <version>3.4.0</version>
+                <configuration>
+                    <warName>webcanteen</warName>
+                </configuration>
             </plugin>
         </plugins>
     </build>
