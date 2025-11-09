@@ -7,10 +7,10 @@ public class RequestUtil {
 	public static int getInt(HttpServletRequest request, String name, int defaultValue) {
 		try {
 			int value = Integer.parseInt(request.getParameter(name));
-			System.out.println(name + ": " + Integer.toString(value));
+//			System.out.println(name + ": " + Integer.toString(value));
 			return value > 0 ? value:defaultValue;
 		} catch (Exception e) {
-			System.out.println("default " + name + ": " + Integer.toString(defaultValue));
+//			System.out.println("default " + name + ": " + Integer.toString(defaultValue));
 			return defaultValue;
 		}
 	}
@@ -18,10 +18,10 @@ public class RequestUtil {
 	public static String getString(HttpServletRequest request, String name, String defaultValue) {
 		try {
 			String value = (String)(request.getParameter(name));
-			System.out.println(name + ": " + value);
+//			System.out.println(name + ": " + value);
 			return value != null ? value:defaultValue;
 		} catch (Exception e) {
-			System.out.println("default " + name + ": " + defaultValue);
+//			System.out.println("default " + name + ": " + defaultValue);
 			return defaultValue;
 		}
 	}
