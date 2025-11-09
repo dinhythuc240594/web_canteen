@@ -27,7 +27,7 @@ import javax.sql.DataSource;
 /**
  * Servlet Filter implementation class AuthFilter
  */
-@WebFilter(urlPatterns = {"/*"})
+@WebFilter("/*")
 public class AuthFilter extends HttpFilter implements Filter {
        
     /**
@@ -57,6 +57,10 @@ public class AuthFilter extends HttpFilter implements Filter {
 		this.tokenSerImpl = new TokenServiceImpl(ds);
 	}
 	
+	private static final String[] STATIC_RESOURCE_EXTENSIONS = {
+	        ".css", ".js", ".jpg", ".jpeg", ".png", ".gif", ".ico", ".svg", ".woff", ".ttf", ".eot"
+	};
+	
 	/**
 	 * @see Filter#doFilter(ServletRequest, ServletResponse, FilterChain)
 	 */
@@ -70,7 +74,21 @@ public class AuthFilter extends HttpFilter implements Filter {
             resp.sendRedirect(req.getContextPath() + "/home");
             return;        	
         }
+        String requestURI = req.getRequestURI().toLowerCase();
+        
+        boolean isStaticResource = false;
+        for (String extension : STATIC_RESOURCE_EXTENSIONS) {
+            if (requestURI.endsWith(extension)) {
+                isStaticResource = true;
+                break;
+            }
+        }
        
+        if (isStaticResource) {
+        	chain.doFilter(request, response);
+        	return;
+        }
+        
         resp.setHeader("Cache-Control", "no-cache, no-store, must-revalidate");
         resp.setHeader("Pragma", "no-cache");
         resp.setDateHeader("Expires", 0);
@@ -117,11 +135,11 @@ public class AuthFilter extends HttpFilter implements Filter {
                 	this.tokenSerImpl.deleteTokenBySeries(dbToken.getSeries());
                 	deleteRememberMeCookie(resp);
                 }
-            } else{
+            } else {
             	System.out.println("expries not exists");
             	deleteRememberMeCookie(resp);
             }
-        }
+        }       
         
         chain.doFilter(request, response);
      

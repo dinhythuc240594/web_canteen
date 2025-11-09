@@ -15,15 +15,15 @@ import jakarta.servlet.http.HttpSession;
 import java.io.IOException;
 
 /**
- * Servlet Filter implementation class LoginFilter
+ * Servlet Filter implementation class FoodFilter
  */
-@WebFilter("/login")
-public class LoginFilter extends HttpFilter implements Filter {
+@WebFilter("/foods")
+public class FoodFilter extends HttpFilter implements Filter {
        
     /**
      * @see HttpFilter#HttpFilter()
      */
-    public LoginFilter() {
+    public FoodFilter() {
         super();
         // TODO Auto-generated constructor stub
     }
@@ -39,17 +39,17 @@ public class LoginFilter extends HttpFilter implements Filter {
 	 * @see Filter#doFilter(ServletRequest, ServletResponse, FilterChain)
 	 */
 	public void doFilter(ServletRequest request, ServletResponse response, FilterChain chain) throws IOException, ServletException {
-        HttpServletRequest req  = (HttpServletRequest) request;
+		
+		System.out.println("filter access permission");
+		HttpServletRequest req  = (HttpServletRequest) request;
         HttpServletResponse resp = (HttpServletResponse) response;
+		
+		HttpSession ses = req.getSession(false);
 
-        resp.setHeader("Cache-Control", "no-cache, no-store, must-revalidate");
-        resp.setHeader("Pragma", "no-cache");
-        resp.setDateHeader("Expires", 0);
-
-        HttpSession ses = req.getSession(false);
-        if (ses != null && ses.getAttribute("username") != null) {
-        	System.out.println("login filter");
-        	resp.sendRedirect(req.getContextPath() + "/foods");
+        boolean is_login = (boolean) (ses != null && ses.getAttribute("is_login") != null) || false;
+        
+        if(is_login !=  true) {
+        	resp.sendRedirect(req.getContextPath() + "/login");
             return;
         }
 
