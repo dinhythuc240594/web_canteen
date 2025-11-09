@@ -18,6 +18,8 @@ import java.io.IOException;
 
 import javax.sql.DataSource;
 
+import dto.FoodDTO;
+
 
 @WebServlet("/foods")
 public class FoodServerlet extends HttpServlet {
@@ -43,14 +45,14 @@ public class FoodServerlet extends HttpServlet {
 		String orderField = RequestUtil.getString(request, "orderField", "DESC");
 		int page = RequestUtil.getInt(request, "page", 1);
 		int id = RequestUtil.getInt(request, "id", 1);
-		FoodDAO foundFood = null;
+		FoodDTO foundFood = null;
 		
 		RequestDispatcher rd;
 		switch (action) {
 			case "list":
 				
 				PageRequest pageReq = new PageRequest(page, PAGE_SIZE, sortField, orderField, keyword);
-				Page<FoodDAO> pageFood = this.foodServiceImpl.findAll(pageReq);
+				Page<FoodDTO> pageFood = this.foodServiceImpl.findAll(pageReq);
 		        request.setAttribute("pageFood", pageFood);
 		        request.setAttribute("pageReq", pageReq);
 		        rd = request.getRequestDispatcher("/foodTemplates/food-list.jsp");

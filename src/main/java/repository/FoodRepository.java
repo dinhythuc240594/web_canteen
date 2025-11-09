@@ -2,14 +2,14 @@ package repository;
 
 import java.util.List;
 
-import model.FoodDAO;
+import dto.FoodDTO;
 import model.PageRequest;
 
-public interface FoodRepository extends Repository<FoodDAO>{
+public interface FoodRepository extends Repository<FoodDTO>{
 	
-	List<FoodDAO> findAll(PageRequest pageRequest);
-	List<FoodDAO> newFoods();
-	List<FoodDAO> promotionFoods();
+	List<FoodDTO> findAll(PageRequest pageRequest);
+	List<FoodDTO> newFoods();
+	List<FoodDTO> promotionFoods();
 	boolean create(String nameFood, double priceFood, int inventoryFood);
 	boolean update(int id, String nameFood, double priceFood, int inventoryFood);
 }

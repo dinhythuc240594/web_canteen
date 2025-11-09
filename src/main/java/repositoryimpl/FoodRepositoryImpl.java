@@ -8,6 +8,7 @@ import java.util.List;
 
 import javax.sql.DataSource;
 
+import dto.FoodDTO;
 import model.FoodDAO;
 import model.PageRequest;
 import repository.FoodRepository;
@@ -20,10 +21,10 @@ public class FoodRepositoryImpl implements FoodRepository{
 	}
 
 	@Override
-	public FoodDAO findById(int id) {
+	public FoodDTO findById(int id) {
         int idFood = id;
-        FoodDAO foundFood = null;
-        String sql = "SELECT id, name, price, inventory, image, description, category_id FROM foods where id = ?";
+        FoodDTO foundFood = null;
+        String sql = "SELECT id, name, price, inventory, image, description, category_id, promotion FROM foods where id = ?";
         try (
         	Connection conn = ds.getConnection();
              PreparedStatement ps = conn.prepareStatement(sql);) {
@@ -38,8 +39,9 @@ public class FoodRepositoryImpl implements FoodRepository{
                 int inventoryFood  = rs.getInt("inventory");
                 String imageFood = rs.getString("image");
                 String descriptionFood = rs.getString("description");
+                double promotion = rs.getDouble("promotion");
 
-                foundFood = new FoodDAO(idFood, nameFood, priceFood, inventoryFood);
+                foundFood = FoodDTO.toDto(new FoodDAO(idFood, nameFood, priceFood, inventoryFood), promotion);
                 break;
             }
 
@@ -100,8 +102,8 @@ public class FoodRepositoryImpl implements FoodRepository{
 	}
 
 	@Override
-	public List<FoodDAO> findAll(PageRequest pageRequest) {
-        List<FoodDAO> foods = new ArrayList<>();
+	public List<FoodDTO> findAll(PageRequest pageRequest) {
+        List<FoodDTO> foods = new ArrayList<>();
 
         int pageSize = pageRequest.getPageSize();
         int offset = pageRequest.getOffset();
@@ -109,7 +111,7 @@ public class FoodRepositoryImpl implements FoodRepository{
         String sortField = pageRequest.getSortField();
         String orderField = pageRequest.getOrderField();
         
-        String sql = "SELECT id, name, price, inventory FROM foods ";
+        String sql = "SELECT id, name, price, inventory, promotion FROM foods ";
         if(keyword != "") {
         	sql += "WHERE name LIKE ? ";
         }
@@ -134,8 +136,9 @@ public class FoodRepositoryImpl implements FoodRepository{
                 String name = rs.getString("name");
                 double price = rs.getDouble("price");
                 int inventory = rs.getInt("inventory");
+                double promotion = rs.getDouble("promotion");
 
-                foods.add(new FoodDAO(id, name, price, inventory));
+                foods.add(FoodDTO.toDto(new FoodDAO(id, name, price, inventory), promotion));
             }
         } catch (Exception e) {
         	System.err.println("Lỗi findAll: " + e.getMessage());
@@ -176,12 +179,10 @@ public class FoodRepositoryImpl implements FoodRepository{
 	}
 
 	@Override
-	public List<FoodDAO> newFoods() {
-        List<FoodDAO> foods = new ArrayList<>();
+	public List<FoodDTO> newFoods() {
+        List<FoodDTO> foods = new ArrayList<>();
         
-        String sql = "SELECT id, name, price, inventory, promotion FROM foods ";
-        sql += "ORDER BY %s %s LIMIT 8";
-        sql = String.format(sql, "promotion", "ASC");
+        String sql = "SELECT id, name, price, inventory, promotion, updated_at FROM foods ORDER BY updated_at DESC LIMIT 8";
         try (Connection conn = ds.getConnection();
              PreparedStatement ps = conn.prepareStatement(sql);) {
 
@@ -191,9 +192,9 @@ public class FoodRepositoryImpl implements FoodRepository{
                 String name = rs.getString("name");
                 double price = rs.getDouble("price");
                 int inventory = rs.getInt("inventory");
+                double promotion = rs.getDouble("promotion");
                 
-
-                foods.add(new FoodDAO(id, name, price, inventory));
+                foods.add(FoodDTO.toDto(new FoodDAO(id, name, price, inventory), promotion));
             }
         } catch (Exception e) {
         	System.err.println("Lỗi newFoods: " + e.getMessage());
@@ -202,12 +203,10 @@ public class FoodRepositoryImpl implements FoodRepository{
 	}
 
 	@Override
-	public List<FoodDAO> promotionFoods() {
-        List<FoodDAO> foods = new ArrayList<>();
+	public List<FoodDTO> promotionFoods() {
+        List<FoodDTO> foods = new ArrayList<>();
         
-        String sql = "SELECT id, name, price, inventory FROM foods ";
-        sql += "ORDER BY %s %s LIMIT 8";
-        sql = String.format(sql, "updated_at", "ASC");
+        String sql = "SELECT id, name, price, inventory, promotion FROM foods ORDER BY promotion DESC LIMIT 8";
         try (Connection conn = ds.getConnection();
              PreparedStatement ps = conn.prepareStatement(sql);) {
 
@@ -217,8 +216,9 @@ public class FoodRepositoryImpl implements FoodRepository{
                 String name = rs.getString("name");
                 double price = rs.getDouble("price");
                 int inventory = rs.getInt("inventory");
+                double promotion = rs.getDouble("promotion");
 
-                foods.add(new FoodDAO(id, name, price, inventory));
+                foods.add(FoodDTO.toDto(new FoodDAO(id, name, price, inventory), promotion));
             }
         } catch (Exception e) {
         	System.err.println("Lỗi promotionFoods: " + e.getMessage());

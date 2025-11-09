@@ -1,6 +1,6 @@
 <%@ page language="java" contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
 <%@ page import="java.util.List" %>
-<%@ page import="model.FoodDAO" %>
+<%@ page import="dto.FoodDTO" %>
 <!DOCTYPE html>
 <html lang="vi">
 <head>
@@ -12,8 +12,8 @@
 
         <%
             
-        	model.Page<model.FoodDAO> pageFood = (model.Page<model.FoodDAO>) request.getAttribute("pageFood");
-        	java.util.List<model.FoodDAO> foods = (java.util.List<model.FoodDAO>) pageFood.getData();
+        	model.Page<dto.FoodDTO> pageFood = (model.Page<dto.FoodDTO>) request.getAttribute("pageFood");
+        	java.util.List<dto.FoodDTO> foods = (java.util.List<dto.FoodDTO>) pageFood.getData();
         	
         	model.PageRequest pageReq = (model.PageRequest) request.getAttribute("pageReq");
         	String keyword = pageReq.getKeyword();
@@ -21,9 +21,9 @@
         	String sortField = pageReq.getSortField();
         	int totalPage = pageFood.getTotalPage();
         	
-        	List<FoodDAO> newFoods = (List<FoodDAO>) request.getAttribute("newFoods");
-        	List<FoodDAO> promotionFoods = (List<FoodDAO>) request.getAttribute("promotionFoods");
-        	List<FoodDAO> allFoods = foods;
+        	List<dto.FoodDTO> newFoods = (List<dto.FoodDTO>) request.getAttribute("newFoods");
+        	List<dto.FoodDTO> promotionFoods = (List<dto.FoodDTO>) request.getAttribute("promotionFoods");
+        	List<dto.FoodDTO> allFoods = foods;
         	
         %>
 
@@ -48,26 +48,26 @@
                  style="scrollbar-width: none; -ms-overflow-style: none; -webkit-overflow-scrolling: touch;">
                 <div class="flex space-x-3 pb-3" style="min-width: max-content;">
                     <%
-		                if (newFoods != null) {
-		                    for (FoodDAO food : newFoods) {
+		                if (promotionFoods != null) {
+		                    for (FoodDTO food : promotionFoods) {
 		            %>
 		            	<div class="flex-shrink-0 w-48 bg-white rounded-lg shadow-sm overflow-hidden border border-gray-200 hover:shadow-md transition-shadow">
 		            		<div class="relative">
                             	<img src="<%= food.getImage() %>"
                                  alt="<%= food.getNameFood() %>"
                                  class="w-full h-28 object-cover">
-                            	<span class="absolute top-2 right-2 bg-red-500 text-white text-xs px-1 py-0.5 rounded">10%</span>
+                            	<span class="absolute top-2 right-2 bg-red-500 text-white text-xs px-1 py-0.5 rounded"><%= food.getPromotion() %>%</span>
                        		</div>
                        		<div class="p-3">
 	                            <h3 class="font-medium text-gray-800 text-sm line-clamp-1"><%= food.getNameFood() %></h3>
 	                            <div class="flex items-center mt-1">
-	                                <span class="text-sm font-bold text-blue-600">22,500đ</span>
-	                                <span class="ml-1 text-xs text-red-500 line-through"><%= food.getPriceFood() %></span>
+	                                <span class="text-sm font-bold text-blue-600"><%= food.getPriceAfterPromotion() %>đ</span>
+	                                <span class="ml-1 text-xs text-red-500 line-through"><%= food.getPriceFood() %>đ</span>
 	                            </div>
 	                            <div class="flex items-center mt-1">
 	                                <i data-lucide="star" class="w-3 h-3 text-yellow-400 fill-current"></i>
 	                                <span class="ml-1 text-xs text-gray-600">4.5</span>
-	                                <span class="ml-auto bg-red-500 text-white text-xs px-1 py-0.5 rounded">-10%</span>
+	                                <span class="ml-auto bg-red-500 text-white text-xs px-1 py-0.5 rounded">-<%= food.getPromotion() %>%</span>
 	                            </div>
 	                            <button onclick="addToCart(1)"
 	                                    class="mt-2 w-full bg-blue-600 text-white py-1.5 rounded text-sm hover:bg-blue-700 transition-colors">
@@ -106,8 +106,8 @@
                 <div class="flex space-x-3 pb-3" style="min-width: max-content;">
                 	<%
                 
-                		if (promotionFoods != null) {
-                    		for (FoodDAO food : promotionFoods) {
+                		if (newFoods != null) {
+                    		for (FoodDTO food : newFoods) {
             		%>
             			
             			<div class="flex-shrink-0 w-48 bg-white rounded-lg shadow-sm overflow-hidden border border-gray-200 hover:shadow-md transition-shadow">
@@ -149,7 +149,7 @@
             <%
             
             	if (allFoods != null) {
-                	for (FoodDAO food : allFoods) {
+                	for (FoodDTO food : allFoods) {
         	%>
 
                 <div class="bg-white rounded-lg shadow-sm overflow-hidden border border-gray-200 hover:shadow-md transition-shadow">

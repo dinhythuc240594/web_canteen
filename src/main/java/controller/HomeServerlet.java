@@ -22,6 +22,8 @@ import java.util.List;
 
 import javax.sql.DataSource;
 
+import dto.FoodDTO;
+
 /**
  * Servlet implementation class HomeServerlet
  */
@@ -57,10 +59,10 @@ public class HomeServerlet extends HttpServlet {
 		int page = RequestUtil.getInt(request, "page", 1);
 		
 		PageRequest pageReq = new PageRequest(page, PAGE_SIZE, sortField, orderField, keyword);
-		Page<FoodDAO> pageFood = this.foodServiceImpl.findAll(pageReq);
+		Page<FoodDTO> pageFood = this.foodServiceImpl.findAll(pageReq);
 		
-		List<FoodDAO> newFoods = this.foodServiceImpl.newFoods();
-		List<FoodDAO> promotionFoods = this.foodServiceImpl.promotionFoods();
+		List<FoodDTO> newFoods = this.foodServiceImpl.newFoods();
+		List<FoodDTO> promotionFoods = this.foodServiceImpl.promotionFoods();
 		
         request.setAttribute("pageFood", pageFood);
         request.setAttribute("newFoods", newFoods);

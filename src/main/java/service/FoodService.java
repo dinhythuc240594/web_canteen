@@ -2,16 +2,17 @@ package service;
 
 import java.util.List;
 
+import dto.FoodDTO;
 import model.FoodDAO;
 import model.Page;
 import model.PageRequest;
 
 public interface FoodService {
 
-	Page<FoodDAO> findAll(PageRequest pageRequest);
-	FoodDAO findById(int id);
-	List<FoodDAO> newFoods();
-	List<FoodDAO> promotionFoods();
+	Page<FoodDTO> findAll(PageRequest pageRequest);
+	FoodDTO findById(int id);	
+	List<FoodDTO> newFoods();
+	List<FoodDTO> promotionFoods();
 	boolean create(String nameFood, double priceFood, int inventoryFood);
 	boolean update(int id, String nameFood, double priceFood, int inventoryFood);
 	boolean delete(int id);
