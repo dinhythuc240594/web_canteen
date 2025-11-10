@@ -26,7 +26,7 @@
                 </div>
             </div>
             <div id="featured-container" class="overflow-x-auto scrollbar-hide"
-                 style="scrollbar-width: none; -ms-overflow-style: none; -webkit-overflow-scrolling: touch;">
+<%--                 style="scrollbar-width: none; -ms-overflow-style: none; -webkit-overflow-scrolling: touch;">--%>>
                 <div class="flex space-x-3 pb-3" style="min-width: max-content;">
                     <!-- Mock Featured Food 1 -->
                     <div class="flex-shrink-0 w-48 bg-white rounded-lg shadow-sm overflow-hidden border border-gray-200 hover:shadow-md transition-shadow">
@@ -179,7 +179,7 @@
                 </div>
             </div>
             <div id="new-container" class="overflow-x-auto scrollbar-hide"
-                 style="scrollbar-width: none; -ms-overflow-style: none; -webkit-overflow-scrolling: touch;">
+<%--                 style="scrollbar-width: none; -ms-overflow-style: none; -webkit-overflow-scrolling: touch;">--%>>
                 <div class="flex space-x-3 pb-3" style="min-width: max-content;">
                     <!-- Mock New Food 1 -->
                     <div class="flex-shrink-0 w-48 bg-white rounded-lg shadow-sm overflow-hidden border border-gray-200 hover:shadow-md transition-shadow">

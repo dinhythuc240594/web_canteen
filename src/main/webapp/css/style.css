@@ -151,14 +151,28 @@ body {
 	border: none;
 }
 
-/* Hide scrollbar but keep functionality */
 .scrollbar-hide {
-	-ms-overflow-style: none;
-	scrollbar-width: none;
+	overflow-x: auto;
+	scrollbar-width: thin;
+	scrollbar-color: #cbd5e0 #f7fafc;
+	-webkit-overflow-scrolling: touch;
 }
 
 .scrollbar-hide::-webkit-scrollbar {
-	display: none;
+	height: 8px;
+}
+
+.scrollbar-hide::-webkit-scrollbar-track {
+	background: #f7fafc;
+}
+
+.scrollbar-hide::-webkit-scrollbar-thumb {
+	background: #cbd5e0;
+	border-radius: 4px;
+}
+
+.scrollbar-hide::-webkit-scrollbar-thumb:hover {
+	background: #a0aec0;
 }
 
 /* Line clamp utilities */
