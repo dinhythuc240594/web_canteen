@@ -24,7 +24,7 @@ public class OrderRepositoryImpl implements OrderRepository{
 	
 	@Override
 	public OrderDAO save(OrderDAO order) {
-		if (order.getId() == null) {
+		if (order.getId() == 0) {
            return insertNewOrder(order);
         } else {
            return updateExistingOrder(order);
@@ -49,7 +49,7 @@ public class OrderRepositoryImpl implements OrderRepository{
             e.printStackTrace();
             throw new RuntimeException("Lỗi khi tìm đơn hàng theo ID: " + id, e);
         }
-        return null; // Trả về null nếu không tìm thấy
+        return null;
 	}
 
 	@Override
@@ -58,8 +58,8 @@ public class OrderRepositoryImpl implements OrderRepository{
         String sql = "SELECT id, user_id, stall_id, total_price, status, created_at, delivery_location, payment_method FROM orders";
 
         try (Connection conn = ds.getConnection();
-             Statement stmt = conn.createStatement();
-             ResultSet rs = stmt.executeQuery(sql)) {
+        	PreparedStatement pstmt = conn.prepareStatement(sql);
+             ResultSet rs = pstmt.executeQuery(sql)) {
 
             while (rs.next()) {
                 orders.add(mapResultSetToOrderDAO(rs));
@@ -172,17 +172,21 @@ public class OrderRepositoryImpl implements OrderRepository{
         String sql = "INSERT INTO orders (user_id, stall_id, total_price, status, delivery_location, payment_method) VALUES (?, ?, ?, ?, ?, ?)";
         
         try (Connection conn = ds.getConnection();
-             PreparedStatement pstmt = conn.prepareStatement(sql)) { 
+             PreparedStatement pstmt = conn.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS)) { 
 
-            pstmt.setLong(1, order.getUserId());
-            pstmt.setLong(2, order.getStallId());
+            pstmt.setInt(1, order.getUserId());
+            pstmt.setInt(2, order.getStallId());
             pstmt.setDouble(3, order.getTotalPrice());
             pstmt.setString(4, order.getStatus());
             pstmt.setString(5, order.getDeliveryLocation());
             pstmt.setString(6, order.getPaymentMethod());
 
             pstmt.executeUpdate();
-            
+            try (ResultSet rs = pstmt.getGeneratedKeys()) {
+                if (rs.next()) {
+                    order.setId(rs.getInt(1));
+                }
+            }
             return order;
 
         } catch (SQLException e) {
@@ -221,9 +225,9 @@ public class OrderRepositoryImpl implements OrderRepository{
 	private OrderDAO mapResultSetToOrderDAO(ResultSet rs) throws SQLException {
         OrderDAO order = new OrderDAO();
         
-        order.setId(rs.getLong("id"));
-        order.setUserId(rs.getLong("user_id"));
-        order.setStallId(rs.getLong("stall_id"));
+        order.setId(rs.getInt("id"));
+        order.setUserId(rs.getInt("user_id"));
+        order.setStallId(rs.getInt("stall_id"));
         order.setTotalPrice(rs.getDouble("total_price"));
         order.setStatus(rs.getString("status"));
 

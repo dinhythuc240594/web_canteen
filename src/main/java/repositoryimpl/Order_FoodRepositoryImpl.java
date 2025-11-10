@@ -26,7 +26,7 @@ public class Order_FoodRepositoryImpl implements Order_FoodRepository{
 		String sql = "INSERT INTO order_foods (order_id, food_id, quantity, price_at_order) VALUES (?, ?, ?, ?)";
 
         try (Connection conn = ds.getConnection();
-             PreparedStatement pstmt = conn.prepareStatement(sql)) { 
+             PreparedStatement pstmt = conn.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS)) { 
 
             pstmt.setInt(1, orderFood.getOrderId());
             pstmt.setInt(2, orderFood.getFoodId());
@@ -35,6 +35,12 @@ public class Order_FoodRepositoryImpl implements Order_FoodRepository{
 
             pstmt.executeUpdate();
 
+            try (ResultSet rs = pstmt.getGeneratedKeys()) {
+                if (rs.next()) {
+                	orderFood.setId(rs.getInt(1));
+                }
+            }
+            
             return orderFood;
 
         } catch (SQLException e) {
@@ -70,8 +76,8 @@ public class Order_FoodRepositoryImpl implements Order_FoodRepository{
         String sql = "SELECT id, order_id, food_id, quantity, price_at_order FROM order_foods";
 
         try (Connection conn = ds.getConnection();
-             Statement stmt = conn.createStatement();
-             ResultSet rs = stmt.executeQuery(sql)) {
+        	PreparedStatement pstmt = conn.prepareStatement(sql);
+             ResultSet rs = pstmt.executeQuery(sql)) {
 
             while (rs.next()) {
                 items.add(mapResultSetToOrderFoodDAO(rs));
@@ -142,6 +148,7 @@ public class Order_FoodRepositoryImpl implements Order_FoodRepository{
 	private Order_FoodDAO mapResultSetToOrderFoodDAO(ResultSet rs) throws SQLException {
         Order_FoodDAO item = new Order_FoodDAO();
         
+        item.setId(rs.getInt("id"));
         item.setOrderId(rs.getInt("order_id"));
         item.setFoodId(rs.getInt("food_id"));
         item.setQuantity(rs.getInt("quantity"));

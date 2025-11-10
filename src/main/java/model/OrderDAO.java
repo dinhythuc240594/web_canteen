@@ -4,9 +4,9 @@ import java.sql.Date;
 
 public class OrderDAO {
 
-	private Long id;
-    private Long userId;
-    private Long stallId;
+	private int id;
+    private int userId;
+    private int stallId;
     private Double totalPrice;
     private String status;
     private Date createdAt;
@@ -16,7 +16,7 @@ public class OrderDAO {
     public OrderDAO() {
     	
     }
-	public OrderDAO(Long id, Long userId, Long stallId, Double totalPrice, String status, Date createdAt,
+	public OrderDAO(int id, int userId, int stallId, Double totalPrice, String status, Date createdAt,
 			String deliveryLocation, String paymentMethod) {
 		super();
 		this.id = id;
@@ -28,22 +28,22 @@ public class OrderDAO {
 		this.deliveryLocation = deliveryLocation;
 		this.paymentMethod = paymentMethod;
 	}
-	public Long getId() {
+	public int getId() {
 		return id;
 	}
-	public void setId(Long id) {
+	public void setId(int id) {
 		this.id = id;
 	}
-	public Long getUserId() {
+	public int getUserId() {
 		return userId;
 	}
-	public void setUserId(Long userId) {
+	public void setUserId(int userId) {
 		this.userId = userId;
 	}
-	public Long getStallId() {
+	public int getStallId() {
 		return stallId;
 	}
-	public void setStallId(Long stallId) {
+	public void setStallId(int stallId) {
 		this.stallId = stallId;
 	}
 	public Double getTotalPrice() {
