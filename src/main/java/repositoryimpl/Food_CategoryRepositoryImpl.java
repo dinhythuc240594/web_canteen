@@ -22,33 +22,33 @@ public class Food_CategoryRepositoryImpl implements Food_CategoryRepository{
 	}
 	
 	@Override
-	public List<Food_CategoryDAO> findAll(PageRequest pageRequest) {
+	public List<Food_CategoryDAO> findAll() {
         List<Food_CategoryDAO> categories = new ArrayList<>();
 
-        int pageSize = pageRequest.getPageSize();
-        int offset = pageRequest.getOffset();
-        String keyword = pageRequest.getKeyword();
-        String sortField = pageRequest.getSortField();
-        String orderField = pageRequest.getOrderField();
+//        int pageSize = pageRequest.getPageSize();
+//        int offset = pageRequest.getOffset();
+//        String keyword = pageRequest.getKeyword();
+//        String sortField = pageRequest.getSortField();
+//        String orderField = pageRequest.getOrderField();
         
         String sql = "SELECT id, name, description FROM food_categories ";
-        if(keyword != "") {
-        	sql += "WHERE name LIKE ? ";
-        }
-        sql += "ORDER BY %s %s LIMIT ? OFFSET ?";
-        sql = String.format(sql, sortField, orderField);
+//        if(keyword != "") {
+//        	sql += "WHERE name LIKE ? ";
+//        }
+//        sql += "ORDER BY %s %s LIMIT ? OFFSET ?";
+//        sql = String.format(sql, sortField, orderField);
         try (Connection conn = ds.getConnection();
              PreparedStatement ps = conn.prepareStatement(sql);) {
 
-        	if(keyword != "") {
-        		String search = "%" + keyword + "%";
-        		ps.setString(1, search);
-        		ps.setInt(2, pageSize);
-        		ps.setInt(3, offset);
-        	} else {
-        		ps.setInt(1, pageSize);
-        		ps.setInt(2, offset);
-        	}
+//        	if(keyword != "") {
+//        		String search = "%" + keyword + "%";
+//        		ps.setString(1, search);
+//        		ps.setInt(2, pageSize);
+//        		ps.setInt(3, offset);
+//        	} else {
+//        		ps.setInt(1, pageSize);
+//        		ps.setInt(2, offset);
+//        	}
         	
         	ResultSet rs = ps.executeQuery();
             while (rs.next()) {
@@ -80,6 +80,12 @@ public class Food_CategoryRepositoryImpl implements Food_CategoryRepository{
 	public int count(String keyword) {
 		// TODO Auto-generated method stub
 		return 0;
+	}
+
+	@Override
+	public List<Food_CategoryDAO> findAll(PageRequest pageRequest) {
+		// TODO Auto-generated method stub
+		return null;
 	}
 
 }

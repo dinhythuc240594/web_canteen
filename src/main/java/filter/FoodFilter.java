@@ -17,7 +17,7 @@ import java.io.IOException;
 /**
  * Servlet Filter implementation class FoodFilter
  */
-@WebFilter("/foods")
+@WebFilter("/food")
 public class FoodFilter extends HttpFilter implements Filter {
        
     /**

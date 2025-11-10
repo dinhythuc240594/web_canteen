@@ -8,13 +8,17 @@ import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.servlet.http.HttpSession;
 import model.FoodDAO;
+import model.Food_CategoryDAO;
 import model.Page;
 import model.PageRequest;
+import repositoryimpl.Food_CategoryRepositoryImpl;
 import serviceimpl.FoodServiceImpl;
+import serviceimpl.Food_CategoryServiceImpl;
 import utils.DataSourceUtil;
 import utils.RequestUtil;
 
 import java.io.IOException;
+import java.util.List;
 
 import javax.sql.DataSource;
 
@@ -26,12 +30,14 @@ public class FoodServerlet extends HttpServlet {
 
 	private static final long serialVersionUID = 1L;
 	private FoodServiceImpl foodServiceImpl;
+	private Food_CategoryServiceImpl categoryServiceImpl;
 	private int PAGE_SIZE = 25;
 	
 	@Override
 	public void init() throws ServletException {
 		DataSource ds = DataSourceUtil.getDataSource();
 		this.foodServiceImpl = new FoodServiceImpl(ds);
+		this.categoryServiceImpl = new Food_CategoryServiceImpl(ds);
 	}
 
 	/**
@@ -60,6 +66,9 @@ public class FoodServerlet extends HttpServlet {
 		        break;
 			
 			case "create":
+				PageRequest pageReq1 = new PageRequest(page, PAGE_SIZE, sortField, orderField, keyword);
+				List<Food_CategoryDAO> categories = this.categoryServiceImpl.findAll();
+				request.setAttribute("categories", categories);
 		        rd = request.getRequestDispatcher("/foodTemplates/food-form-create.jsp");
 		        rd.forward(request, response);
 		        break;

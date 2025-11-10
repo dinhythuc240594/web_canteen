@@ -4,7 +4,9 @@ import java.util.List;
 
 import javax.sql.DataSource;
 
+import dto.FoodDTO;
 import model.Food_CategoryDAO;
+import model.Page;
 import model.PageRequest;
 import repository.Food_CategoryRepository;
 import repositoryimpl.Food_CategoryRepositoryImpl;
@@ -19,8 +21,8 @@ public class Food_CategoryServiceImpl implements Food_CategoryService {
 	}
 	
 	@Override
-	public List<Food_CategoryDAO> findAll(PageRequest pageRequest) {
-		return this.foodCategoryRepository.findAll(pageRequest);
+	public List<Food_CategoryDAO> findAll() {
+		return this.foodCategoryRepository.findAll();
 	}
 
 	@Override
