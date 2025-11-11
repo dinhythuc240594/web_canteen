@@ -30,6 +30,10 @@
                               ${requestScope.currentPage == 'stalls' ? 'text-white bg-white/20' : 'text-white/80 hover:text-white'}">
 						Quầy
 					</a>
+					<a href="${pageContext.request.contextPath}/admin.jsp"
+					   class="px-3 py-2 rounded-md text-sm font-medium text-white/80 hover:text-white">
+						Admin
+					</a>
 				</nav>
 			</div>
 			<div class="flex items-center space-x-4">
