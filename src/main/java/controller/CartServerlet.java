@@ -59,7 +59,7 @@ public class CartServerlet extends HttpServlet {
         }
 
         request.setAttribute("cartItems", cart);
-        request.getRequestDispatcher("/WEB-INF/views/cart.jsp").forward(request, response);
+        request.getRequestDispatcher("cart.jsp").forward(request, response);
 	}
 
 	/**

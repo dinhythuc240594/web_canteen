@@ -11,6 +11,7 @@ import java.util.List;
 import javax.sql.DataSource;
 
 import model.Order_FoodDAO;
+import model.PageRequest;
 import repository.Order_FoodRepository;
 
 public class Order_FoodRepositoryImpl implements Order_FoodRepository{
@@ -71,7 +72,7 @@ public class Order_FoodRepositoryImpl implements Order_FoodRepository{
 	}
 
 	@Override
-	public List<Order_FoodDAO> findAll() {
+	public List<Order_FoodDAO> findAll(PageRequest pageRequest) {
 		List<Order_FoodDAO> items = new ArrayList<>();
         String sql = "SELECT id, order_id, food_id, quantity, price_at_order FROM order_foods";
 
@@ -156,5 +157,37 @@ public class Order_FoodRepositoryImpl implements Order_FoodRepository{
         
         return item;
     }
+
+	@Override
+	public int count(String keyword) {
+        String sql = "SELECT COUNT(1) FROM order_foods";
+        int total = 0;
+        
+        boolean hasKeywords = keyword != null && !keyword.trim().isEmpty();
+        
+        if (hasKeywords) {
+            sql += " WHERE title LIKE ? OR author LIKE ?";
+        }
+        
+        try (Connection conn = ds.getConnection();
+             PreparedStatement ps = conn.prepareStatement(sql)) {
+
+            if (hasKeywords) {
+                String searchPattern = "%" + keyword + "%";
+                ps.setString(1, searchPattern);
+                ps.setString(2, searchPattern);
+            }
+            ResultSet rs = ps.executeQuery();
+            if (rs.next()) {
+                total = rs.getInt(1);
+            }
+
+        } catch (Exception e) {
+        	System.err.println("Lỗi count: " + e.getMessage());
+            return -1;
+        }
+        
+        return total;
+	}
 
 }

@@ -1,5 +1,7 @@
 package model;
 
+import java.sql.Date;
+
 public class Order_FoodDAO {
 
 	private int id;              
@@ -7,6 +9,7 @@ public class Order_FoodDAO {
     private int foodId;       
     private int quantity;     
     private Double priceAtOrder;
+    private Date date;
 
     public Order_FoodDAO() {
     	
@@ -57,6 +60,14 @@ public class Order_FoodDAO {
 
 	public void setPriceAtOrder(Double priceAtOrder) {
 		this.priceAtOrder = priceAtOrder;
+	}
+
+	public Date getDate() {
+		return date;
+	}
+
+	public void setDate(Date date) {
+		this.date = date;
 	}
 	
 }

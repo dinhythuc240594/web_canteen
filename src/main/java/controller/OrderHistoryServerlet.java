@@ -8,11 +8,14 @@ import jakarta.servlet.http.HttpServletResponse;
 import jakarta.servlet.http.HttpSession;
 import model.OrderDAO;
 import model.Order_FoodDAO;
+import model.Page;
+import model.PageRequest;
 import repository.OrderRepository;
 import repository.Order_FoodRepository;
 import repositoryimpl.OrderRepositoryImpl;
 import repositoryimpl.Order_FoodRepositoryImpl;
 import utils.DataSourceUtil;
+import utils.RequestUtil;
 
 import java.io.IOException;
 import java.util.HashMap;
@@ -20,6 +23,8 @@ import java.util.List;
 import java.util.Map;
 
 import javax.sql.DataSource;
+
+import dto.FoodDTO;
 
 /**
  * Servlet implementation class OrderHistoryServerlet
@@ -38,6 +43,7 @@ public class OrderHistoryServerlet extends HttpServlet {
 
     private OrderRepository orderRepository;
     private Order_FoodRepository orderFoodRepository;
+    private int PAGE_SIZE = 25;
 
     @Override
     public void init() throws ServletException {
@@ -59,18 +65,25 @@ public class OrderHistoryServerlet extends HttpServlet {
 
 	        int userId = (int) session.getAttribute("userId");
 
-	        List<OrderDAO> orders = orderRepository.findByUserId(userId);
+			String keyword = RequestUtil.getString(request, "keyword", "");
+			String sortField = RequestUtil.getString(request, "sortField", "name");
+			String orderField = RequestUtil.getString(request, "orderField", "ASC");
+			int page = RequestUtil.getInt(request, "page", 1);
+	        
+	        PageRequest pageReq = new PageRequest(page, PAGE_SIZE, sortField, orderField, keyword);
+	        List<OrderDAO> orders = this.orderRepository.findAll(pageReq);
 
-	        Map<Integer, List<Order_FoodDAO>> orderFoodMap = new HashMap<>();
-	        for (OrderDAO order : orders) {
-	            List<Order_FoodDAO> items = orderFoodRepository.findByOrderId(order.getId());
-	            orderFoodMap.put(order.getId(), items);
-	        }
-
+//	        List<OrderDAO> orders = orderRepository.findByUserId(userId);	        
+//	        Map<Integer, List<Order_FoodDAO>> orderFoodMap = new HashMap<>();
+//	        for (OrderDAO order : orders) {
+//	            List<Order_FoodDAO> items = orderFoodRepository.findByOrderId(order.getId());
+//	            orderFoodMap.put(order.getId(), items);
+//	        }
+	        
 	        request.setAttribute("orders", orders);
-	        request.setAttribute("orderFoodMap", orderFoodMap);
+	        request.setAttribute("pageReq", pageReq);
 
-	        request.getRequestDispatcher("/WEB-INF/views/order-history.jsp").forward(request, response);
+	        request.getRequestDispatcher("order_history.jsp").forward(request, response);
 	}
 
 	/**

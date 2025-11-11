@@ -5,6 +5,9 @@ import java.util.List;
 import javax.sql.DataSource;
 
 import model.OrderDAO;
+import model.Order_FoodDAO;
+import model.Page;
+import model.PageRequest;
 import repository.OrderRepository;
 import repositoryimpl.OrderRepositoryImpl;
 import service.OrderService;
@@ -28,8 +31,9 @@ public class OrderServiceImpl implements OrderService{
 	}
 
 	@Override
-	public List<OrderDAO> findAll() {
-		return this.orderRepository.findAll();
+	public Page<OrderDAO> findAll(PageRequest pageRequest) {
+		List<OrderDAO> data = this.orderRepository.findAll(pageRequest); 
+		return new Page<>(data, pageRequest.getPage(), this.orderRepository.count(pageRequest.getKeyword()), pageRequest.getPageSize());
 	}
 
 	@Override
@@ -50,6 +54,12 @@ public class OrderServiceImpl implements OrderService{
 	@Override
 	public boolean updateStatus(int id, String newStatus) {
 		return this.orderRepository.updateStatus(id, newStatus);
+	}
+
+	@Override
+	public int count(String keyword) {
+		// TODO Auto-generated method stub
+		return 0;
 	}
 
 }

@@ -28,6 +28,20 @@
         %>
 
 <main class="min-h-screen bg-gradient-to-br from-gray-50 to-blue-50">
+		<!-- Search -->
+		<form action="foods=?action=list" method="post">
+	        <input type="text" class="form-control form-control-lg custom-input-style" name="keyword" id="keyword" placeholder="Enter text here">
+	        Sort Field<select name="sortfield">
+	        	<option value="title">Title</option>
+	        	<option value="price">Price</option>
+	        </select>
+	        Sort Order<select name="orderfield" >
+	        	<option value="ASC">ASC</option>
+	        	<option value="DESC">DESC</option>
+	        </select>
+	        <button type="submit">Tìm kiếm</button>
+	    </form>
+	    
     <!-- Featured Foods Section -->
     <section class="py-6 bg-white/80 backdrop-blur-sm">
         <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">

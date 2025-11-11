@@ -12,6 +12,7 @@ import java.util.List;
 import javax.sql.DataSource;
 
 import model.OrderDAO;
+import model.PageRequest;
 import repository.OrderRepository;
 
 public class OrderRepositoryImpl implements OrderRepository{
@@ -53,7 +54,7 @@ public class OrderRepositoryImpl implements OrderRepository{
 	}
 
 	@Override
-	public List<OrderDAO> findAll() {
+	public List<OrderDAO> findAll(PageRequest pageRequest) {
 		List<OrderDAO> orders = new ArrayList<>();
         String sql = "SELECT id, user_id, stall_id, total_price, status, created_at, delivery_location, payment_method FROM orders";
 
@@ -241,5 +242,11 @@ public class OrderRepositoryImpl implements OrderRepository{
         
         return order;
     }
+
+	@Override
+	public int count(String keyword) {
+		// TODO Auto-generated method stub
+		return 0;
+	}
 
 }
