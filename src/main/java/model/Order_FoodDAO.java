@@ -10,6 +10,7 @@ public class Order_FoodDAO {
     private int quantity;     
     private Double priceAtOrder;
     private Date date;
+    private String name;
 
     public Order_FoodDAO() {
     	
@@ -68,6 +69,14 @@ public class Order_FoodDAO {
 
 	public void setDate(Date date) {
 		this.date = date;
+	}
+
+	public String getName() {
+		return name;
+	}
+
+	public void setName(String name) {
+		this.name = name;
 	}
 	
 }

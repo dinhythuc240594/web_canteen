@@ -56,8 +56,20 @@ public class OrderRepositoryImpl implements OrderRepository{
 	@Override
 	public List<OrderDAO> findAll(PageRequest pageRequest) {
 		List<OrderDAO> orders = new ArrayList<>();
+		
+        int pageSize = pageRequest.getPageSize();
+        int offset = pageRequest.getOffset();
+        String keyword = pageRequest.getKeyword();
+        String sortField = pageRequest.getSortField();
+        String orderField = pageRequest.getOrderField();
+        
         String sql = "SELECT id, user_id, stall_id, total_price, status, created_at, delivery_location, payment_method FROM orders";
-
+        if(keyword != "") {
+        	sql += "WHERE name LIKE ? ";
+        }
+        sql += "ORDER BY %s %s LIMIT ? OFFSET ?";
+        sql = String.format(sql, sortField, orderField);
+		
         try (Connection conn = ds.getConnection();
         	PreparedStatement pstmt = conn.prepareStatement(sql);
              ResultSet rs = pstmt.executeQuery(sql)) {
