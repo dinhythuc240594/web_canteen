@@ -45,7 +45,7 @@
                 </div>
             </div>
             <div id="featured-container" class="overflow-x-auto scrollbar-hide"
-                 style="scrollbar-width: none; -ms-overflow-style: none; -webkit-overflow-scrolling: touch;">
+<%--                 style="scrollbar-width: none; -ms-overflow-style: none; -webkit-overflow-scrolling: touch;">--%>>
                 <div class="flex space-x-3 pb-3" style="min-width: max-content;">
                     <%
 		                if (promotionFoods != null) {
@@ -102,7 +102,7 @@
                 </div>
             </div>
             <div id="new-container" class="overflow-x-auto scrollbar-hide"
-                 style="scrollbar-width: none; -ms-overflow-style: none; -webkit-overflow-scrolling: touch;">
+<%--                 style="scrollbar-width: none; -ms-overflow-style: none; -webkit-overflow-scrolling: touch;">--%>>
                 <div class="flex space-x-3 pb-3" style="min-width: max-content;">
                 	<%
                 
