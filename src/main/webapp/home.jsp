@@ -29,18 +29,23 @@
 
 <main class="min-h-screen bg-gradient-to-br from-gray-50 to-blue-50">
 		<!-- Search -->
-		<form action="foods=?action=list" method="post">
-	        <input type="text" class="form-control form-control-lg custom-input-style" name="keyword" id="keyword" placeholder="Enter text here">
-	        Sort Field<select name="sortfield">
-	        	<option value="title">Title</option>
-	        	<option value="price">Price</option>
-	        </select>
-	        Sort Order<select name="orderfield" >
-	        	<option value="ASC">ASC</option>
-	        	<option value="DESC">DESC</option>
-	        </select>
-	        <button type="submit">Tìm kiếm</button>
-	    </form>
+		<section class="py-6 bg-white/80 backdrop-blur-sm">
+			<div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+				<form action="home" method="get">
+			        <input type="text" class="form-control form-control-lg custom-input-style" name="keyword" id="keyword" placeholder="Enter text here">
+			        Sort Field<select name="sortfield">
+			        	<option value="title">Title</option>
+			        	<option value="price">Price</option>
+			        </select>
+			        Sort Order<select name="orderfield" >
+			        	<option value="ASC">ASC</option>
+			        	<option value="DESC">DESC</option>
+			        </select>
+			        <button type="submit">Tìm kiếm</button>
+			    </form>	
+			</div>
+		</section>
+
 	    
     <!-- Featured Foods Section -->
     <section class="py-6 bg-white/80 backdrop-blur-sm">
@@ -155,6 +160,7 @@
     </section>
 
     <!-- All Foods A-Z Section -->
+    <a href="#" id="all"></a>
     <section class="py-6 bg-gradient-to-b from-gray-50 to-blue-50">
         <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
             <h2 class="text-xl font-bold text-gray-800 mb-4">Tất cả món ăn (A → Z)</h2>
@@ -194,7 +200,7 @@
 	       		<nav aria-label="Page navigation">
 					<ul class="pagination">
 					  <% for (int i=1; i < totalPage; i++) { %>
-					  	<li class="page-item"><a class="page-link" href="books?page=<%= i %>&keyword=<%= keyword %>"><%= i %></a></li>
+					  	<li class="page-item"><a class="page-link" href="home?action=list&page=<%= i %>&keyword=<%= keyword %>#all"><%= i %></a></li>
 					  <% } %>
 					</ul>
 				</nav>   
