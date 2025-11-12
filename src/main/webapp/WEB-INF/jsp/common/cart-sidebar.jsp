@@ -16,15 +16,16 @@
         </div>
       </div>
 
-      <div id="cart-footer" class="border-t p-3 hidden">
-        <div class="flex justify-between items-center mb-3">
-          <span class="text-sm font-semibold">Tổng cộng:</span>
-          <span id="cart-total" class="text-lg font-bold text-blue-600">0đ</span>
-        </div>
-        <button onclick="checkout()" class="w-full bg-blue-600 text-white py-2 rounded text-sm hover:bg-blue-700 transition-colors">
-          Đặt hàng
-        </button>
-      </div>
+      	<div id="cart-footer" class="p-3 border-t bg-white hidden">
+		  <div class="flex justify-between font-semibold text-gray-700 mb-2">
+		    <span>Tổng tiền:</span>
+		    <span id="cart-total">0đ</span>
+		  </div>
+		  <button onclick="checkout()" class="w-full bg-blue-600 text-white py-2 rounded hover:bg-blue-700 transition">
+		    🛒 Đặt món
+		  </button>
+		</div>
+
     </div>
   </div>
 </div>

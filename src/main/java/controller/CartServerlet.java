@@ -1,5 +1,10 @@
 package controller;
 
+import jakarta.json.Json;
+import jakarta.json.JsonArray;
+import jakarta.json.JsonObject;
+import jakarta.json.JsonReader;
+import jakarta.json.JsonValue;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.annotation.WebServlet;
 import jakarta.servlet.http.HttpServlet;
@@ -16,13 +21,17 @@ import utils.DataSourceUtil;
 import utils.RequestUtil;
 
 import java.io.IOException;
+import java.io.StringReader;
 import java.sql.Date;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 import javax.sql.DataSource;
+
+import org.apache.tomcat.util.json.JSONParser;
 
 /**
  * Servlet implementation class CartServerlet
@@ -51,7 +60,7 @@ public class CartServerlet extends HttpServlet {
             throws ServletException, IOException {
 
         HttpSession session = request.getSession();
-        String action = RequestUtil.getString(request, "action", "list");
+        String action = RequestUtil.getString(request, "action", "");
 
         List<Order_FoodDAO> cart = (List<Order_FoodDAO>) session.getAttribute("cart");
         if (cart == null) {
@@ -70,12 +79,12 @@ public class CartServerlet extends HttpServlet {
             case "checkout":
                 Object userIdObj = session.getAttribute("userId");
                 if (userIdObj == null) {
-                    response.sendRedirect(request.getContextPath() + "/login.jsp");
+                    response.sendRedirect(request.getContextPath() + "/login");
                     return;
                 }
 
                 if (cart.isEmpty()) {
-                    response.sendRedirect(request.getContextPath() + "/cart.jsp?error=empty_cart");
+                    response.sendRedirect(request.getContextPath() + "/cart?error=empty_cart");
                     return;
                 }
 
@@ -103,8 +112,7 @@ public class CartServerlet extends HttpServlet {
                 return;
 
             default:
-                // Mặc định hiển thị giỏ hàng
-                request.getRequestDispatcher("/cart.jsp").forward(request, response);
+            	request.getRequestDispatcher("/cart.jsp").forward(request, response);
                 return;
         }
     }
@@ -114,108 +122,111 @@ public class CartServerlet extends HttpServlet {
     protected void doPost(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
 
-        String action = request.getParameter("action");
+        String action = RequestUtil.getString(request, "action", "");
+        String orders_raw = RequestUtil.getString(request, "orders", "[]");
+        String orders = orders_raw.replace('\'', '"');
         HttpSession session = request.getSession();
 
         List<Order_FoodDAO> cart = (List<Order_FoodDAO>) session.getAttribute("cart");
-        if (cart == null) {
-            cart = new ArrayList<>();
-        }
+        if (cart == null) cart = new ArrayList<>();
 
         switch (action) {
+            case "add":
+                try {
+                		JsonReader reader = Json.createReader(new StringReader(orders));
+                		JsonArray jsonArray = reader.readArray();
+                		reader.close();
+                		
+                		for (JsonValue value : jsonArray) {
+                			JsonObject obj = value.asJsonObject();
+                			int id = obj.getInt("id");
+                			
+//                			Order_FoodDAO newItem = new Order_FoodDAO();
+//                            newItem.setFoodId();
+//                            newItem.setName(foodName);
+//                            newItem.setPriceAtOrder(price);
+//                            newItem.setQuantity(quantity);
+//                            cart.add(newItem);
+                		}
+                	    
+                        
+
+                    session.setAttribute("cart", cart);
+                    response.sendRedirect(request.getContextPath() + "/cart");
+                } catch (NumberFormatException e) {
+                    response.sendRedirect(request.getContextPath() + "/cart?error=invalid_data");
+                }
+                return;
+
             case "checkout":
                 processCheckout(request, response, session, cart);
                 return;
 
-            case "add":
-                int foodId = Integer.parseInt(request.getParameter("foodId"));
-                String foodName = request.getParameter("foodName");
-                double price = Double.parseDouble(request.getParameter("price"));
-                int quantity = Integer.parseInt(request.getParameter("quantity"));
-
-                Optional<Order_FoodDAO> existingItem =
-                        cart.stream().filter(i -> i.getFoodId() == foodId).findFirst();
-
-                if (existingItem.isPresent()) {
-                    existingItem.get().setQuantity(existingItem.get().getQuantity() + quantity);
-                } else {
-                    Order_FoodDAO item = new Order_FoodDAO();
-                    item.setFoodId(foodId);
-                    item.setPriceAtOrder(price);
-                    item.setQuantity(quantity);
-                    item.setName(foodName);
-                    cart.add(item);
-                }
-
-                session.setAttribute("cart", cart);
-                response.sendRedirect(request.getContextPath() + "/cart.jsp");
-                return;
-
             default:
-                response.sendRedirect(request.getContextPath() + "/cart.jsp");
-                return;
+                response.sendRedirect(request.getContextPath() + "/cart");
+                break;
         }
     }
 
     private void processCheckout(HttpServletRequest request, HttpServletResponse response,
                                  HttpSession session, List<Order_FoodDAO> cart) throws IOException {
         try {
+        	
             if (cart == null || cart.isEmpty()) {
-                response.sendRedirect(request.getContextPath() + "/cart.jsp?error=empty_cart");
+                response.sendRedirect(request.getContextPath() + "/cart?error=empty_cart");
                 return;
             }
 
             Integer userId = (Integer) session.getAttribute("userId");
             if (userId == null) {
                 session.setAttribute("redirectAfterLogin", request.getRequestURI());
-                response.sendRedirect(request.getContextPath() + "/login.jsp");
+                response.sendRedirect(request.getContextPath() + "/login");
                 return;
             }
-
-            String stallParam = request.getParameter("stallId");
-            if (stallParam == null || stallParam.isEmpty()) {
-                response.sendRedirect(request.getContextPath() + "/cart.jsp?error=invalid_stall");
-                return;
-            }
-            int stallId = Integer.parseInt(stallParam);
 
             String address = request.getParameter("address");
+            String payment = request.getParameter("payment");
+            String stallParam = request.getParameter("stallId");
+
             if (address == null || address.trim().isEmpty()) {
-                response.sendRedirect(request.getContextPath() + "/cart.jsp?error=empty_address");
+                response.sendRedirect(request.getContextPath() + "/cart?error=empty_address");
                 return;
             }
 
-            double totalPrice = cart.stream()
-                    .mapToDouble(item -> item.getPriceAtOrder() * item.getQuantity())
+            int stallId = 0;
+            try {
+                stallId = Integer.parseInt(stallParam);
+            } catch (NumberFormatException ignored) {
+            }
+
+            double total = cart.stream()
+                    .mapToDouble(i -> i.getPriceAtOrder() * i.getQuantity())
                     .sum();
 
             OrderDAO order = new OrderDAO();
             order.setUserId(userId);
             order.setStallId(stallId);
-            order.setStatus("PENDING");
-            order.setTotalPrice(totalPrice);
-            order.setPaymentMethod("COD");
+            order.setTotalPrice(total);
+            order.setStatus("Đang xử lý");
+            order.setPaymentMethod(payment != null ? payment : "COD");
             order.setDeliveryLocation(address);
 
-            order = this.orderRepository.save(order);
-            if (order == null || order.getId() == 0) {
-                response.sendRedirect(request.getContextPath() + "/cart.jsp?error=order_failed");
-                return;
-            }
+            OrderDAO createdOrder = orderRepository.save(order);
 
             for (Order_FoodDAO item : cart) {
-                item.setOrderId(order.getId());
-                this.orderFoodRepository.create(item);
+                item.setOrderId(createdOrder.getId());
+                orderFoodRepository.create(item);
             }
 
             session.removeAttribute("cart");
-            response.sendRedirect(request.getContextPath() + "/orders?success=checkout_complete");
+            request.setAttribute("order", createdOrder);
+            request.getRequestDispatcher("/order-success.jsp").forward(request, response);
 
         } catch (NumberFormatException e) {
-            response.sendRedirect(request.getContextPath() + "/cart.jsp?error=invalid_stallId");
+            response.sendRedirect(request.getContextPath() + "/cart?error=invalid_stallId");
         } catch (Exception e) {
             e.printStackTrace();
-            response.sendRedirect(request.getContextPath() + "/cart.jsp?error=server_error");
+            response.sendRedirect(request.getContextPath() + "/cart?error=server_error");
         }
     }
 
