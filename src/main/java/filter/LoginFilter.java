@@ -48,14 +48,8 @@ public class LoginFilter extends HttpFilter implements Filter {
 
         HttpSession ses = req.getSession(false);
         if (ses != null && ses.getAttribute("username") != null) {
+        	System.out.println("login filter");
         	resp.sendRedirect(req.getContextPath() + "/foods");
-//        	if(ses.getAttribute("role").equals("admin")) {
-//        		resp.sendRedirect(req.getContextPath() + "/admin");
-//        	}
-//        	else {
-//        		resp.sendRedirect(req.getContextPath()+"/user");
-//        	}
-            
             return;
         }
 

@@ -4,6 +4,7 @@ import java.util.List;
 
 import javax.sql.DataSource;
 
+import dto.FoodDTO;
 import model.FoodDAO;
 import model.Page;
 import model.PageRequest;
@@ -20,13 +21,13 @@ public class FoodServiceImpl implements FoodService {
 	}
 	
 	@Override
-	public Page<FoodDAO> findAll(PageRequest pageRequest) {
-		List<FoodDAO> data = this.foodRepository.findAll(pageRequest); 
+	public Page<FoodDTO> findAll(PageRequest pageRequest) {
+		List<FoodDTO> data = this.foodRepository.findAll(pageRequest); 
 		return new Page<>(data, pageRequest.getPage(), this.foodRepository.count(pageRequest.getKeyword()), pageRequest.getPageSize());
 	}
 
 	@Override
-	public FoodDAO findById(int id) {
+	public FoodDTO findById(int id) {
 		return this.foodRepository.findById(id);
 	}
 
@@ -42,14 +43,22 @@ public class FoodServiceImpl implements FoodService {
 
 	@Override
 	public boolean delete(int id) {
-		// TODO Auto-generated method stub
-		return false;
+		return this.foodRepository.delete(id);
 	}
 
 	@Override
 	public int count(String keyword) {
-		// TODO Auto-generated method stub
-		return 0;
+		return this.foodRepository.count(keyword);
+	}
+
+	@Override
+	public List<FoodDTO> newFoods() {
+		return this.foodRepository.newFoods();
+	}
+
+	@Override
+	public List<FoodDTO> promotionFoods() {
+		return this.foodRepository.promotionFoods();
 	}
 
 }

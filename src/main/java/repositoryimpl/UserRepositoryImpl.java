@@ -39,7 +39,7 @@ public class UserRepositoryImpl implements UserRepository {
 	@Override
 	public UserDAO getUser(String username) {
 		UserDAO user = null;
-		String sql = "SELECT id, email, full_name, phone_number, photo, role, status FROM users WHERE username=? AND status=1";
+		String sql = "SELECT id, email, full_name, phone_number, photo, role, status FROM users WHERE username=?";
 		try (Connection conn = ds.getConnection()){
             PreparedStatement ps = conn.prepareStatement(sql);
     		ps.setString(1, username);

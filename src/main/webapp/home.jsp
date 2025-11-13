@@ -1,4 +1,6 @@
 <%@ page language="java" contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
+<%@ page import="java.util.List" %>
+<%@ page import="dto.FoodDTO" %>
 <!DOCTYPE html>
 <html lang="vi">
 <head>
@@ -8,7 +10,38 @@
 <body>
 <jsp:include page="/WEB-INF/jsp/common/header.jsp" />
 
+        <%
+            
+        	model.Page<dto.FoodDTO> pageFood = (model.Page<dto.FoodDTO>) request.getAttribute("pageFood");
+        	java.util.List<dto.FoodDTO> foods = (java.util.List<dto.FoodDTO>) pageFood.getData();
+        	
+        	model.PageRequest pageReq = (model.PageRequest) request.getAttribute("pageReq");
+        	String keyword = pageReq.getKeyword();
+        	String orderField = pageReq.getOrderField();
+        	String sortField = pageReq.getSortField();
+        	int totalPage = pageFood.getTotalPage();
+        	
+        	List<dto.FoodDTO> newFoods = (List<dto.FoodDTO>) request.getAttribute("newFoods");
+        	List<dto.FoodDTO> promotionFoods = (List<dto.FoodDTO>) request.getAttribute("promotionFoods");
+        	List<dto.FoodDTO> allFoods = foods;
+        	
+        %>
+
 <main class="min-h-screen bg-gradient-to-br from-gray-50 to-blue-50">
+		<!-- Search -->
+		<form action="foods=?action=list" method="post">
+	        <input type="text" class="form-control form-control-lg custom-input-style" name="keyword" id="keyword" placeholder="Enter text here">
+	        Sort Field<select name="sortfield">
+	        	<option value="title">Title</option>
+	        	<option value="price">Price</option>
+	        </select>
+	        Sort Order<select name="orderfield" >
+	        	<option value="ASC">ASC</option>
+	        	<option value="DESC">DESC</option>
+	        </select>
+	        <button type="submit">Tìm kiếm</button>
+	    </form>
+	    
     <!-- Featured Foods Section -->
     <section class="py-6 bg-white/80 backdrop-blur-sm">
         <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
@@ -28,135 +61,39 @@
             <div id="featured-container" class="overflow-x-auto scrollbar-hide"
 <%--                 style="scrollbar-width: none; -ms-overflow-style: none; -webkit-overflow-scrolling: touch;">--%>>
                 <div class="flex space-x-3 pb-3" style="min-width: max-content;">
-                    <!-- Mock Featured Food 1 -->
-                    <div class="flex-shrink-0 w-48 bg-white rounded-lg shadow-sm overflow-hidden border border-gray-200 hover:shadow-md transition-shadow">
-                        <div class="relative">
-                            <img src="https://placehold.co/200x150/e74c3c/white?text=Cơm+Chiên"
-                                 alt="Cơm chiên dương châu"
+                    <%
+		                if (promotionFoods != null) {
+		                    for (FoodDTO food : promotionFoods) {
+		            %>
+		            	<div class="flex-shrink-0 w-48 bg-white rounded-lg shadow-sm overflow-hidden border border-gray-200 hover:shadow-md transition-shadow">
+		            		<div class="relative">
+                            	<img src="<%= food.getImage() %>"
+                                 alt="<%= food.getNameFood() %>"
                                  class="w-full h-28 object-cover">
-                            <span class="absolute top-2 right-2 bg-red-500 text-white text-xs px-1 py-0.5 rounded">-10%</span>
-                        </div>
-                        <div class="p-3">
-                            <h3 class="font-medium text-gray-800 text-sm line-clamp-1">Cơm chiên dương châu</h3>
-                            <div class="flex items-center mt-1">
-                                <span class="text-sm font-bold text-blue-600">22,500đ</span>
-                                <span class="ml-1 text-xs text-red-500 line-through">25,000đ</span>
-                            </div>
-                            <div class="flex items-center mt-1">
-                                <i data-lucide="star" class="w-3 h-3 text-yellow-400 fill-current"></i>
-                                <span class="ml-1 text-xs text-gray-600">4.5</span>
-                                <span class="ml-auto bg-red-500 text-white text-xs px-1 py-0.5 rounded">-10%</span>
-                            </div>
-                            <button onclick="addToCart(1)"
-                                    class="mt-2 w-full bg-blue-600 text-white py-1.5 rounded text-sm hover:bg-blue-700 transition-colors">
-                                Thêm vào giỏ
-                            </button>
-                        </div>
-                    </div>
-
-                    <!-- Mock Featured Food 2 -->
-                    <div class="flex-shrink-0 w-48 bg-white rounded-lg shadow-sm overflow-hidden border border-gray-200 hover:shadow-md transition-shadow">
-                        <div class="relative">
-                            <img src="https://placehold.co/200x150/27ae60/white?text=Sinh+Tố"
-                                 alt="Sinh tố bơ"
-                                 class="w-full h-28 object-cover">
-                            <span class="absolute top-2 right-2 bg-red-500 text-white text-xs px-1 py-0.5 rounded">-15%</span>
-                        </div>
-                        <div class="p-3">
-                            <h3 class="font-medium text-gray-800 text-sm line-clamp-1">Sinh tố bơ</h3>
-                            <div class="flex items-center mt-1">
-                                <span class="text-sm font-bold text-blue-600">18,700đ</span>
-                                <span class="ml-1 text-xs text-red-500 line-through">22,000đ</span>
-                            </div>
-                            <div class="flex items-center mt-1">
-                                <i data-lucide="star" class="w-3 h-3 text-yellow-400 fill-current"></i>
-                                <span class="ml-1 text-xs text-gray-600">4.6</span>
-                                <span class="ml-auto bg-red-500 text-white text-xs px-1 py-0.5 rounded">-15%</span>
-                            </div>
-                            <button onclick="addToCart(2)"
-                                    class="mt-2 w-full bg-blue-600 text-white py-1.5 rounded text-sm hover:bg-blue-700 transition-colors">
-                                Thêm vào giỏ
-                            </button>
-                        </div>
-                    </div>
-
-                    <!-- Mock Featured Food 3 -->
-                    <div class="flex-shrink-0 w-48 bg-white rounded-lg shadow-sm overflow-hidden border border-gray-200 hover:shadow-md transition-shadow">
-                        <div class="relative">
-                            <img src="https://placehold.co/200x150/2ecc71/white?text=Cơm+Chay"
-                                 alt="Cơm chay thập cẩm"
-                                 class="w-full h-28 object-cover">
-                            <span class="absolute top-2 right-2 bg-red-500 text-white text-xs px-1 py-0.5 rounded">-12%</span>
-                        </div>
-                        <div class="p-3">
-                            <h3 class="font-medium text-gray-800 text-sm line-clamp-1">Cơm chay thập cẩm</h3>
-                            <div class="flex items-center mt-1">
-                                <span class="text-sm font-bold text-blue-600">24,640đ</span>
-                                <span class="ml-1 text-xs text-red-500 line-through">28,000đ</span>
-                            </div>
-                            <div class="flex items-center mt-1">
-                                <i data-lucide="star" class="w-3 h-3 text-yellow-400 fill-current"></i>
-                                <span class="ml-1 text-xs text-gray-600">4.7</span>
-                                <span class="ml-auto bg-red-500 text-white text-xs px-1 py-0.5 rounded">-12%</span>
-                            </div>
-                            <button onclick="addToCart(3)"
-                                    class="mt-2 w-full bg-blue-600 text-white py-1.5 rounded text-sm hover:bg-blue-700 transition-colors">
-                                Thêm vào giỏ
-                            </button>
-                        </div>
-                    </div>
-
-                    <!-- Mock Featured Food 4 -->
-                    <div class="flex-shrink-0 w-48 bg-white rounded-lg shadow-sm overflow-hidden border border-gray-200 hover:shadow-md transition-shadow">
-                        <div class="relative">
-                            <img src="https://placehold.co/200x150/1abc9c/white?text=Salad"
-                                 alt="Salad rau củ"
-                                 class="w-full h-28 object-cover">
-                            <span class="absolute top-2 right-2 bg-red-500 text-white text-xs px-1 py-0.5 rounded">-8%</span>
-                        </div>
-                        <div class="p-3">
-                            <h3 class="font-medium text-gray-800 text-sm line-clamp-1">Salad rau củ</h3>
-                            <div class="flex items-center mt-1">
-                                <span class="text-sm font-bold text-blue-600">18,400đ</span>
-                                <span class="ml-1 text-xs text-red-500 line-through">20,000đ</span>
-                            </div>
-                            <div class="flex items-center mt-1">
-                                <i data-lucide="star" class="w-3 h-3 text-yellow-400 fill-current"></i>
-                                <span class="ml-1 text-xs text-gray-600">4.2</span>
-                                <span class="ml-auto bg-red-500 text-white text-xs px-1 py-0.5 rounded">-8%</span>
-                            </div>
-                            <button onclick="addToCart(4)"
-                                    class="mt-2 w-full bg-blue-600 text-white py-1.5 rounded text-sm hover:bg-blue-700 transition-colors">
-                                Thêm vào giỏ
-                            </button>
-                        </div>
-                    </div>
-
-                    <!-- Mock Featured Food 5 -->
-                    <div class="flex-shrink-0 w-48 bg-white rounded-lg shadow-sm overflow-hidden border border-gray-200 hover:shadow-md transition-shadow">
-                        <div class="relative">
-                            <img src="https://placehold.co/200x150/9b59b6/white?text=Bánh+Mì"
-                                 alt="Bánh mì thịt nướng"
-                                 class="w-full h-28 object-cover">
-                            <span class="absolute top-2 right-2 bg-red-500 text-white text-xs px-1 py-0.5 rounded">-5%</span>
-                        </div>
-                        <div class="p-3">
-                            <h3 class="font-medium text-gray-800 text-sm line-clamp-1">Bánh mì thịt nướng</h3>
-                            <div class="flex items-center mt-1">
-                                <span class="text-sm font-bold text-blue-600">17,100đ</span>
-                                <span class="ml-1 text-xs text-red-500 line-through">18,000đ</span>
-                            </div>
-                            <div class="flex items-center mt-1">
-                                <i data-lucide="star" class="w-3 h-3 text-yellow-400 fill-current"></i>
-                                <span class="ml-1 text-xs text-gray-600">4.3</span>
-                                <span class="ml-auto bg-red-500 text-white text-xs px-1 py-0.5 rounded">-5%</span>
-                            </div>
-                            <button onclick="addToCart(5)"
-                                    class="mt-2 w-full bg-blue-600 text-white py-1.5 rounded text-sm hover:bg-blue-700 transition-colors">
-                                Thêm vào giỏ
-                            </button>
-                        </div>
-                    </div>
+                            	<span class="absolute top-2 right-2 bg-red-500 text-white text-xs px-1 py-0.5 rounded"><%= food.getPromotion() %>%</span>
+                       		</div>
+                       		<div class="p-3">
+	                            <h3 class="font-medium text-gray-800 text-sm line-clamp-1"><%= food.getNameFood() %></h3>
+	                            <div class="flex items-center mt-1">
+	                                <span class="text-sm font-bold text-blue-600"><%= food.getPriceAfterPromotion() %>đ</span>
+	                                <span class="ml-1 text-xs text-red-500 line-through"><%= food.getPriceFood() %>đ</span>
+	                            </div>
+	                            <div class="flex items-center mt-1">
+	                                <i data-lucide="star" class="w-3 h-3 text-yellow-400 fill-current"></i>
+	                                <span class="ml-1 text-xs text-gray-600">4.5</span>
+	                                <span class="ml-auto bg-red-500 text-white text-xs px-1 py-0.5 rounded">-<%= food.getPromotion() %>%</span>
+	                            </div>
+	                            <button onclick="addToCart(1)"
+	                                    class="mt-2 w-full bg-blue-600 text-white py-1.5 rounded text-sm hover:bg-blue-700 transition-colors">
+	                                Thêm vào giỏ
+	                            </button>
+                        	</div>
+		            	</div>
+		            	
+		            <%
+                    		}
+                		}
+            		%>
                 </div>
             </div>
         </div>
@@ -181,89 +118,37 @@
             <div id="new-container" class="overflow-x-auto scrollbar-hide"
 <%--                 style="scrollbar-width: none; -ms-overflow-style: none; -webkit-overflow-scrolling: touch;">--%>>
                 <div class="flex space-x-3 pb-3" style="min-width: max-content;">
-                    <!-- Mock New Food 1 -->
-                    <div class="flex-shrink-0 w-48 bg-white rounded-lg shadow-sm overflow-hidden border border-gray-200 hover:shadow-md transition-shadow">
-                        <img src="https://placehold.co/200x150/3498db/white?text=Phở+Bò"
-                             alt="Phở bò"
-                             class="w-full h-28 object-cover">
-                        <div class="p-3">
-                            <h3 class="font-medium text-gray-800 text-sm line-clamp-1">Phở bò</h3>
-                            <div class="flex items-center mt-1">
-                                <span class="text-sm font-bold text-blue-600">30,000đ</span>
-                            </div>
-                            <div class="flex items-center mt-1">
-                                <i data-lucide="star" class="w-3 h-3 text-yellow-400 fill-current"></i>
-                                <span class="ml-1 text-xs text-gray-600">4.8</span>
-                            </div>
-                            <button onclick="addToCart(6)"
+                	<%
+                
+                		if (newFoods != null) {
+                    		for (FoodDTO food : newFoods) {
+            		%>
+            			
+            			<div class="flex-shrink-0 w-48 bg-white rounded-lg shadow-sm overflow-hidden border border-gray-200 hover:shadow-md transition-shadow">
+							<img src="<%= food.getImage() %>"
+	                             alt="<%= food.getNameFood() %>"
+	                             class="w-full h-28 object-cover">
+                        	<div class="p-3">
+                            	<h3 class="font-medium text-gray-800 text-sm line-clamp-1"><%= food.getNameFood() %></h3>
+                            	<div class="flex items-center mt-1">
+                                	<span class="text-sm font-bold text-blue-600"><%= food.getPriceFood() %></span>
+                            	</div>
+                            	<div class="flex items-center mt-1">
+                                	<i data-lucide="star" class="w-3 h-3 text-yellow-400 fill-current"></i>
+                                	<span class="ml-1 text-xs text-gray-600">4.8</span>
+                            	</div>
+                            	<button onclick="addToCart(6)"
                                     class="mt-2 w-full bg-blue-600 text-white py-1.5 rounded text-sm hover:bg-blue-700 transition-colors">
                                 Thêm vào giỏ
-                            </button>
-                        </div>
-                    </div>
-
-                    <!-- Mock New Food 2 -->
-                    <div class="flex-shrink-0 w-48 bg-white rounded-lg shadow-sm overflow-hidden border border-gray-200 hover:shadow-md transition-shadow">
-                        <img src="https://placehold.co/200x150/f39c12/white?text=Sữa+Chua"
-                             alt="Sữa chua nếp cẩm"
-                             class="w-full h-28 object-cover">
-                        <div class="p-3">
-                            <h3 class="font-medium text-gray-800 text-sm line-clamp-1">Sữa chua nếp cẩm</h3>
-                            <div class="flex items-center mt-1">
-                                <span class="text-sm font-bold text-blue-600">15,000đ</span>
-                            </div>
-                            <div class="flex items-center mt-1">
-                                <i data-lucide="star" class="w-3 h-3 text-yellow-400 fill-current"></i>
-                                <span class="ml-1 text-xs text-gray-600">4.4</span>
-                            </div>
-                            <button onclick="addToCart(7)"
-                                    class="mt-2 w-full bg-blue-600 text-white py-1.5 rounded text-sm hover:bg-blue-700 transition-colors">
-                                Thêm vào giỏ
-                            </button>
-                        </div>
-                    </div>
-
-                    <!-- Mock New Food 3 -->
-                    <div class="flex-shrink-0 w-48 bg-white rounded-lg shadow-sm overflow-hidden border border-gray-200 hover:shadow-md transition-shadow">
-                        <img src="https://placehold.co/200x150/16a085/white?text=Bún+Chả"
-                             alt="Bún chả Hà Nội"
-                             class="w-full h-28 object-cover">
-                        <div class="p-3">
-                            <h3 class="font-medium text-gray-800 text-sm line-clamp-1">Bún chả Hà Nội</h3>
-                            <div class="flex items-center mt-1">
-                                <span class="text-sm font-bold text-blue-600">35,000đ</span>
-                            </div>
-                            <div class="flex items-center mt-1">
-                                <i data-lucide="star" class="w-3 h-3 text-yellow-400 fill-current"></i>
-                                <span class="ml-1 text-xs text-gray-600">4.5</span>
-                            </div>
-                            <button onclick="addToCart(8)"
-                                    class="mt-2 w-full bg-blue-600 text-white py-1.5 rounded text-sm hover:bg-blue-700 transition-colors">
-                                Thêm vào giỏ
-                            </button>
-                        </div>
-                    </div>
-
-                    <!-- Mock New Food 4 -->
-                    <div class="flex-shrink-0 w-48 bg-white rounded-lg shadow-sm overflow-hidden border border-gray-200 hover:shadow-md transition-shadow">
-                        <img src="https://placehold.co/200x150/8e44ad/white?text=Cơm+Tấm"
-                             alt="Cơm tấm sườn bì"
-                             class="w-full h-28 object-cover">
-                        <div class="p-3">
-                            <h3 class="font-medium text-gray-800 text-sm line-clamp-1">Cơm tấm sườn bì</h3>
-                            <div class="flex items-center mt-1">
-                                <span class="text-sm font-bold text-blue-600">32,000đ</span>
-                            </div>
-                            <div class="flex items-center mt-1">
-                                <i data-lucide="star" class="w-3 h-3 text-yellow-400 fill-current"></i>
-                                <span class="ml-1 text-xs text-gray-600">4.6</span>
-                            </div>
-                            <button onclick="addToCart(9)"
-                                    class="mt-2 w-full bg-blue-600 text-white py-1.5 rounded text-sm hover:bg-blue-700 transition-colors">
-                                Thêm vào giỏ
-                            </button>
-                        </div>
-                    </div>
+                            	</button>
+                        	</div>
+            			</div>
+            		
+		            <%
+                    		}
+                		}
+            		%>
+                    
                 </div>
             </div>
         </div>
@@ -274,15 +159,21 @@
         <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
             <h2 class="text-xl font-bold text-gray-800 mb-4">Tất cả món ăn (A → Z)</h2>
             <div class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-3">
-                <!-- Mock Food Items -->
+             
+            <%
+            
+            	if (allFoods != null) {
+                	for (FoodDTO food : allFoods) {
+        	%>
+
                 <div class="bg-white rounded-lg shadow-sm overflow-hidden border border-gray-200 hover:shadow-md transition-shadow">
-                    <img src="https://placehold.co/200x150/e67e22/white?text=Trứng"
-                         alt="Trứng ốp la"
+                    <img src="<%= food.getImage() %>"
+	                     alt="<%= food.getNameFood() %>"
                          class="w-full h-28 object-cover">
                     <div class="p-3">
-                        <h3 class="font-medium text-gray-800 text-sm line-clamp-1">Trứng ốp la</h3>
+                        <h3 class="font-medium text-gray-800 text-sm line-clamp-1"><%= food.getNameFood() %></h3>
                         <div class="flex items-center mt-1">
-                            <span class="text-sm font-bold text-blue-600">8,000đ</span>
+                            <span class="text-sm font-bold text-blue-600"><%= food.getPriceFood() %></span>
                         </div>
                         <div class="flex items-center mt-1">
                             <i data-lucide="star" class="w-3 h-3 text-yellow-400 fill-current"></i>
@@ -293,169 +184,20 @@
                             Thêm vào giỏ
                         </button>
                     </div>
-                </div>
+                </div>				
 
-                <div class="bg-white rounded-lg shadow-sm overflow-hidden border border-gray-200 hover:shadow-md transition-shadow">
-                    <div class="relative">
-                        <img src="https://placehold.co/200x150/9b59b6/white?text=Bánh+Mì"
-                             alt="Bánh mì thịt nướng"
-                             class="w-full h-28 object-cover">
-                        <span class="absolute top-2 right-2 bg-red-500 text-white text-xs px-1 py-0.5 rounded">-5%</span>
-                    </div>
-                    <div class="p-3">
-                        <h3 class="font-medium text-gray-800 text-sm line-clamp-1">Bánh mì thịt nướng</h3>
-                        <div class="flex items-center mt-1">
-                            <span class="text-sm font-bold text-blue-600">17,100đ</span>
-                            <span class="ml-1 text-xs text-red-500 line-through">18,000đ</span>
-                        </div>
-                        <div class="flex items-center mt-1">
-                            <i data-lucide="star" class="w-3 h-3 text-yellow-400 fill-current"></i>
-                            <span class="ml-1 text-xs text-gray-600">4.3</span>
-                            <span class="ml-auto bg-red-500 text-white text-xs px-1 py-0.5 rounded">-5%</span>
-                        </div>
-                        <button onclick="addToCart(5)"
-                                class="mt-2 w-full bg-blue-600 text-white py-1.5 rounded text-sm hover:bg-blue-700 transition-colors">
-                            Thêm vào giỏ
-                        </button>
-                    </div>
-                </div>
-
-                <div class="bg-white rounded-lg shadow-sm overflow-hidden border border-gray-200 hover:shadow-md transition-shadow">
-                    <img src="https://placehold.co/200x150/3498db/white?text=Phở+Bò"
-                         alt="Phở bò"
-                         class="w-full h-28 object-cover">
-                    <div class="p-3">
-                        <h3 class="font-medium text-gray-800 text-sm line-clamp-1">Phở bò</h3>
-                        <div class="flex items-center mt-1">
-                            <span class="text-sm font-bold text-blue-600">30,000đ</span>
-                        </div>
-                        <div class="flex items-center mt-1">
-                            <i data-lucide="star" class="w-3 h-3 text-yellow-400 fill-current"></i>
-                            <span class="ml-1 text-xs text-gray-600">4.8</span>
-                        </div>
-                        <button onclick="addToCart(6)"
-                                class="mt-2 w-full bg-blue-600 text-white py-1.5 rounded text-sm hover:bg-blue-700 transition-colors">
-                            Thêm vào giỏ
-                        </button>
-                    </div>
-                </div>
-
-                <div class="bg-white rounded-lg shadow-sm overflow-hidden border border-gray-200 hover:shadow-md transition-shadow">
-                    <div class="relative">
-                        <img src="https://placehold.co/200x150/e74c3c/white?text=Cơm+Chiên"
-                             alt="Cơm chiên dương châu"
-                             class="w-full h-28 object-cover">
-                        <span class="absolute top-2 right-2 bg-red-500 text-white text-xs px-1 py-0.5 rounded">-10%</span>
-                    </div>
-                    <div class="p-3">
-                        <h3 class="font-medium text-gray-800 text-sm line-clamp-1">Cơm chiên dương châu</h3>
-                        <div class="flex items-center mt-1">
-                            <span class="text-sm font-bold text-blue-600">22,500đ</span>
-                            <span class="ml-1 text-xs text-red-500 line-through">25,000đ</span>
-                        </div>
-                        <div class="flex items-center mt-1">
-                            <i data-lucide="star" class="w-3 h-3 text-yellow-400 fill-current"></i>
-                            <span class="ml-1 text-xs text-gray-600">4.5</span>
-                            <span class="ml-auto bg-red-500 text-white text-xs px-1 py-0.5 rounded">-10%</span>
-                        </div>
-                        <button onclick="addToCart(1)"
-                                class="mt-2 w-full bg-blue-600 text-white py-1.5 rounded text-sm hover:bg-blue-700 transition-colors">
-                            Thêm vào giỏ
-                        </button>
-                    </div>
-                </div>
-
-                <div class="bg-white rounded-lg shadow-sm overflow-hidden border border-gray-200 hover:shadow-md transition-shadow">
-                    <img src="https://placehold.co/200x150/f39c12/white?text=Sữa+Chua"
-                         alt="Sữa chua nếp cẩm"
-                         class="w-full h-28 object-cover">
-                    <div class="p-3">
-                        <h3 class="font-medium text-gray-800 text-sm line-clamp-1">Sữa chua nếp cẩm</h3>
-                        <div class="flex items-center mt-1">
-                            <span class="text-sm font-bold text-blue-600">15,000đ</span>
-                        </div>
-                        <div class="flex items-center mt-1">
-                            <i data-lucide="star" class="w-3 h-3 text-yellow-400 fill-current"></i>
-                            <span class="ml-1 text-xs text-gray-600">4.4</span>
-                        </div>
-                        <button onclick="addToCart(7)"
-                                class="mt-2 w-full bg-blue-600 text-white py-1.5 rounded text-sm hover:bg-blue-700 transition-colors">
-                            Thêm vào giỏ
-                        </button>
-                    </div>
-                </div>
-
-                <div class="bg-white rounded-lg shadow-sm overflow-hidden border border-gray-200 hover:shadow-md transition-shadow">
-                    <div class="relative">
-                        <img src="https://placehold.co/200x150/2ecc71/white?text=Cơm+Chay"
-                             alt="Cơm chay thập cẩm"
-                             class="w-full h-28 object-cover">
-                        <span class="absolute top-2 right-2 bg-red-500 text-white text-xs px-1 py-0.5 rounded">-12%</span>
-                    </div>
-                    <div class="p-3">
-                        <h3 class="font-medium text-gray-800 text-sm line-clamp-1">Cơm chay thập cẩm</h3>
-                        <div class="flex items-center mt-1">
-                            <span class="text-sm font-bold text-blue-600">24,640đ</span>
-                            <span class="ml-1 text-xs text-red-500 line-through">28,000đ</span>
-                        </div>
-                        <div class="flex items-center mt-1">
-                            <i data-lucide="star" class="w-3 h-3 text-yellow-400 fill-current"></i>
-                            <span class="ml-1 text-xs text-gray-600">4.7</span>
-                            <span class="ml-auto bg-red-500 text-white text-xs px-1 py-0.5 rounded">-12%</span>
-                        </div>
-                        <button onclick="addToCart(3)"
-                                class="mt-2 w-full bg-blue-600 text-white py-1.5 rounded text-sm hover:bg-blue-700 transition-colors">
-                            Thêm vào giỏ
-                        </button>
-                    </div>
-                </div>
-
-                <div class="bg-white rounded-lg shadow-sm overflow-hidden border border-gray-200 hover:shadow-md transition-shadow">
-                    <div class="relative">
-                        <img src="https://placehold.co/200x150/1abc9c/white?text=Salad"
-                             alt="Salad rau củ"
-                             class="w-full h-28 object-cover">
-                        <span class="absolute top-2 right-2 bg-red-500 text-white text-xs px-1 py-0.5 rounded">-8%</span>
-                    </div>
-                    <div class="p-3">
-                        <h3 class="font-medium text-gray-800 text-sm line-clamp-1">Salad rau củ</h3>
-                        <div class="flex items-center mt-1">
-                            <span class="text-sm font-bold text-blue-600">18,400đ</span>
-                            <span class="ml-1 text-xs text-red-500 line-through">20,000đ</span>
-                        </div>
-                        <div class="flex items-center mt-1">
-                            <i data-lucide="star" class="w-3 h-3 text-yellow-400 fill-current"></i>
-                            <span class="ml-1 text-xs text-gray-600">4.2</span>
-                            <span class="ml-auto bg-red-500 text-white text-xs px-1 py-0.5 rounded">-8%</span>
-                        </div>
-                        <button onclick="addToCart(4)"
-                                class="mt-2 w-full bg-blue-600 text-white py-1.5 rounded text-sm hover:bg-blue-700 transition-colors">
-                            Thêm vào giỏ
-                        </button>
-                    </div>
-                </div>
-
-                <div class="bg-white rounded-lg shadow-sm overflow-hidden border border-gray-200 hover:shadow-md transition-shadow">
-                    <img src="https://placehold.co/200x150/27ae60/white?text=Sinh+Tố"
-                         alt="Sinh tố bơ"
-                         class="w-full h-28 object-cover">
-                    <div class="p-3">
-                        <h3 class="font-medium text-gray-800 text-sm line-clamp-1">Sinh tố bơ</h3>
-                        <div class="flex items-center mt-1">
-                            <span class="text-sm font-bold text-blue-600">18,700đ</span>
-                            <span class="ml-1 text-xs text-red-500 line-through">22,000đ</span>
-                        </div>
-                        <div class="flex items-center mt-1">
-                            <i data-lucide="star" class="w-3 h-3 text-yellow-400 fill-current"></i>
-                            <span class="ml-1 text-xs text-gray-600">4.6</span>
-                            <span class="ml-auto bg-red-500 text-white text-xs px-1 py-0.5 rounded">-15%</span>
-                        </div>
-                        <button onclick="addToCart(2)"
-                                class="mt-2 w-full bg-blue-600 text-white py-1.5 rounded text-sm hover:bg-blue-700 transition-colors">
-                            Thêm vào giỏ
-                        </button>
-                    </div>
-                </div>
+        	<%
+                	}
+            	}
+        	%>
+        
+	       		<nav aria-label="Page navigation">
+					<ul class="pagination">
+					  <% for (int i=1; i < totalPage; i++) { %>
+					  	<li class="page-item"><a class="page-link" href="books?page=<%= i %>&keyword=<%= keyword %>"><%= i %></a></li>
+					  <% } %>
+					</ul>
+				</nav>   
             </div>
         </div>
     </section>

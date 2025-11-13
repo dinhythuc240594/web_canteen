@@ -14,8 +14,8 @@
         <h2>List</h2>
         <%
             
-        	model.Page<model.FoodDAO> pageFood = (model.Page<model.FoodDAO>) request.getAttribute("pageFood");
-        	java.util.List<model.FoodDAO> foods = (java.util.List<model.FoodDAO>) pageFood.getData();
+        	model.Page<dto.FoodDTO> pageFood = (model.Page<dto.FoodDTO>) request.getAttribute("pageFood");
+        	java.util.List<dto.FoodDTO> foods = (java.util.List<dto.FoodDTO>) pageFood.getData();
         	
         	model.PageRequest pageReq = (model.PageRequest) request.getAttribute("pageReq");
         	String keyword = pageReq.getKeyword();
@@ -40,7 +40,7 @@
                 </tr>
                 </thead>
                 <tbody>
-            <% for (model.FoodDAO f : foods) { %>
+            <% for (dto.FoodDTO f : foods) { %>
 
                 <tr>
                     <td><%= f.getNameFood() %></td>

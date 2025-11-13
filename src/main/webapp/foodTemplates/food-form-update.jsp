@@ -7,7 +7,7 @@
 <body>
 	<h1>Edit</h1>
   <div id="container">
-	<% model.FoodDAO food = (model.FoodDAO) request.getAttribute("food"); %>
+	<% dto.FoodDTO food = (dto.FoodDTO) request.getAttribute("food"); %>
 	<% if (food != null) { %>
     <div id="" class="form-text">
       <form method="POST" action="foods" method="post">

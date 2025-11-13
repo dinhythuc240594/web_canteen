@@ -1,13 +1,13 @@
-<%@ page language="java" contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
+<%@ page language="java" contentType="text/html; charset=UTF-8"
+    pageEncoding="UTF-8"%>
 <!DOCTYPE html>
-<html lang="vi">
+<html>
 <head>
 	<title>Đăng nhập - Canteen ĐH</title>
 	<jsp:include page="/WEB-INF/jsp/common/head.jsp" />
 </head>
 <body>
 <jsp:include page="/WEB-INF/jsp/common/header.jsp" />
-
 <div class="min-h-screen bg-gradient-to-br from-gray-50 to-blue-50 flex items-center justify-center py-8 px-4 sm:px-6 lg:px-8">
 	<div class="max-w-md w-full bg-white p-6 rounded-lg shadow-sm border border-gray-200">
 		<div class="text-center mb-6">
@@ -37,7 +37,10 @@
 						class="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500 text-sm"
 				/>
 			</div>
-
+		    <div class="mb-3 form-check">
+		    	<input type="checkbox" class="form-check-input" id="remember" name="remember">
+		        <label class="form-check-label" for="rememberMe">Remember me</label>
+		    </div>
 			<div>
 				<button
 						type="submit"
@@ -47,7 +50,12 @@
 				</button>
 			</div>
 		</form>
-
+		<% String error = (String) request.getAttribute("error"); %>
+		<% if (error != null) { %>
+		<div class="alert alert-danger" role="alert">
+		<%= error %>
+		</div>
+		<% } %>
 		<div class="mt-4 text-center">
 			<p class="text-xs text-gray-600">
 				Chưa có tài khoản?
@@ -66,10 +74,34 @@
 	});
 
 	function handleLogin(event) {
-		// For UI only, prevent form submission
-		event.preventDefault();
-		alert('Tính năng đăng nhập sẽ được triển khai khi kết nối backend!');
+		
+		var username = $('#username').val();
+		var password = $('#password').val();
+		var remember = $('#remember').val();
+		
+		var data = {
+				"username": username,
+				"password": password,
+				"remember": remember
+		}
+		
+		$.ajax({
+		    type: "POST",
+		    url: "login",
+		    data: data,
+		    dataType: "json",
+		    success: function(response) {
+		        console.log("Success:", response);
+		    },
+		    error: function(xhr, status, error) {
+		        console.error("Error:", status, error);
+		    },
+		    complete: function(xhr, status) {
+		        console.log("Request complete.");
+		    }
+		});
 	}
 </script>
 </body>
 </html>
+

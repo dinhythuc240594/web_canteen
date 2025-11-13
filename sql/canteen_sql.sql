@@ -57,6 +57,19 @@ CREATE TABLE IF NOT EXISTS foods (
     CHECK (inventory >= 0)
 );
 
+ALTER TABLE foods --Đổi cột image từ BLOB sang liên kết (image_id) nếu chưa có
+    DROP COLUMN IF EXISTS image,
+    ADD COLUMN IF NOT EXISTS image_id INT AFTER category_id,
+    ADD COLUMN IF NOT EXISTS promotion DOUBLE DEFAULT 0 AFTER description;
+
+-- Bổ sung ràng buộc liên kết đến bảng images
+ALTER TABLE foods
+    ADD CONSTRAINT IF NOT EXISTS fk_food_image
+        FOREIGN KEY (image_id) REFERENCES images(id) ON DELETE SET NULL;
+
+-- Tùy chọn: thêm index để truy vấn nhanh
+CREATE INDEX IF NOT EXISTS idx_foods_image ON foods(image_id);
+
 -- Bảng orders
 CREATE TABLE IF NOT EXISTS orders (
     id INT AUTO_INCREMENT PRIMARY KEY,
