@@ -14,6 +14,8 @@ import model.PageRequest;
 import repository.FoodRepository;
 
 public class FoodRepositoryImpl implements FoodRepository{
+	private static final String PLACEHOLDER_IMAGE = "image/food-thumbnail.png";
+
 	private final DataSource ds;
 	
 	public FoodRepositoryImpl(DataSource ds) {
@@ -22,27 +24,34 @@ public class FoodRepositoryImpl implements FoodRepository{
 
 	@Override
 	public FoodDTO findById(int id) {
-        int idFood = id;
         FoodDTO foundFood = null;
-        String sql = "SELECT id, name, price, inventory, image, description, category_id, promotion FROM foods where id = ?";
-        try (
-        	Connection conn = ds.getConnection();
-             PreparedStatement ps = conn.prepareStatement(sql);) {
+        String sql = """
+        		SELECT f.id, f.name, f.price, f.inventory, f.description,
+        		       f.category_id, f.promotion, f.image_id
+        		FROM foods f
+        		WHERE f.id = ?
+        		""";
+        try (Connection conn = ds.getConnection();
+             PreparedStatement ps = conn.prepareStatement(sql)) {
 
-            ps.setInt(1, idFood);
+            ps.setInt(1, id);
 
             ResultSet rs = ps.executeQuery();
-            while (rs.next()) {
-
+            if (rs.next()) {
                 String nameFood = rs.getString("name");
                 double priceFood = rs.getDouble("price");
                 int inventoryFood  = rs.getInt("inventory");
-                String imageFood = rs.getString("image");
                 String descriptionFood = rs.getString("description");
                 double promotion = rs.getDouble("promotion");
+                int categoryId = rs.getInt("category_id");
+                int imageId = rs.getInt("image_id");
 
-                foundFood = FoodDTO.toDto(new FoodDAO(idFood, nameFood, priceFood, inventoryFood), promotion);
-                break;
+                FoodDAO entity = new FoodDAO(id, nameFood, priceFood, inventoryFood);
+                entity.setDescription(descriptionFood);
+                entity.setCategory_id(categoryId);
+                entity.setImage(resolveImagePath(imageId));
+
+                foundFood = FoodDTO.toDto(entity, promotion);
             }
 
         } catch (Exception e) {
@@ -108,27 +117,30 @@ public class FoodRepositoryImpl implements FoodRepository{
         int pageSize = pageRequest.getPageSize();
         int offset = pageRequest.getOffset();
         String keyword = pageRequest.getKeyword();
-        String sortField = pageRequest.getSortField();
-        String orderField = pageRequest.getOrderField();
+        String sortField = mapSortField(pageRequest.getSortField());
+        String orderField = "ASC".equalsIgnoreCase(pageRequest.getOrderField()) ? "ASC" : "DESC";
+        boolean hasKeyword = keyword != null && !keyword.trim().isEmpty();
         
-        String sql = "SELECT id, name, price, inventory, promotion FROM foods ";
-        if(keyword != "") {
-        	sql += "WHERE name LIKE ? ";
+        StringBuilder sql = new StringBuilder("""
+                SELECT f.id, f.name, f.price, f.inventory,
+                       f.description, f.category_id, f.promotion,
+                       f.image_id
+                FROM foods f
+                """);
+        if(hasKeyword) {
+        	sql.append("WHERE f.name LIKE ? ");
         }
-        sql += "ORDER BY %s %s LIMIT ? OFFSET ?";
-        sql = String.format(sql, sortField, orderField);
+        sql.append("ORDER BY ").append(sortField).append(' ').append(orderField)
+           .append(" LIMIT ? OFFSET ?");
         try (Connection conn = ds.getConnection();
-             PreparedStatement ps = conn.prepareStatement(sql);) {
+             PreparedStatement ps = conn.prepareStatement(sql.toString())) {
 
-        	if(keyword != "") {
-        		String search = "%" + keyword + "%";
-        		ps.setString(1, search);
-        		ps.setInt(2, pageSize);
-        		ps.setInt(3, offset);
-        	} else {
-        		ps.setInt(1, pageSize);
-        		ps.setInt(2, offset);
+        	int paramIndex = 1;
+        	if(hasKeyword) {
+        		ps.setString(paramIndex++, "%" + keyword + "%");
         	}
+        	ps.setInt(paramIndex++, pageSize);
+        	ps.setInt(paramIndex, offset);
         	
         	ResultSet rs = ps.executeQuery();
             while (rs.next()) {
@@ -137,8 +149,16 @@ public class FoodRepositoryImpl implements FoodRepository{
                 double price = rs.getDouble("price");
                 int inventory = rs.getInt("inventory");
                 double promotion = rs.getDouble("promotion");
+                String description = rs.getString("description");
+                int categoryId = rs.getInt("category_id");
+                int imageId = rs.getInt("image_id");
 
-                foods.add(FoodDTO.toDto(new FoodDAO(id, name, price, inventory), promotion));
+                FoodDAO entity = new FoodDAO(id, name, price, inventory);
+                entity.setDescription(description);
+                entity.setCategory_id(categoryId);
+                entity.setImage(resolveImagePath(imageId));
+
+                foods.add(FoodDTO.toDto(entity, promotion));
             }
         } catch (Exception e) {
         	System.err.println("Lỗi findAll: " + e.getMessage());
@@ -182,9 +202,16 @@ public class FoodRepositoryImpl implements FoodRepository{
 	public List<FoodDTO> newFoods() {
         List<FoodDTO> foods = new ArrayList<>();
         
-        String sql = "SELECT id, name, price, inventory, promotion, updated_at FROM foods ORDER BY updated_at DESC LIMIT 8";
+        String sql = """
+        		SELECT f.id, f.name, f.price, f.inventory,
+        		       f.description, f.category_id, f.promotion,
+        		       f.image_id
+        		FROM foods f
+        		ORDER BY f.updated_at DESC
+        		LIMIT 8
+        		""";
         try (Connection conn = ds.getConnection();
-             PreparedStatement ps = conn.prepareStatement(sql);) {
+             PreparedStatement ps = conn.prepareStatement(sql)) {
 
         	ResultSet rs = ps.executeQuery();
             while (rs.next()) {
@@ -193,8 +220,16 @@ public class FoodRepositoryImpl implements FoodRepository{
                 double price = rs.getDouble("price");
                 int inventory = rs.getInt("inventory");
                 double promotion = rs.getDouble("promotion");
+                String description = rs.getString("description");
+                int categoryId = rs.getInt("category_id");
+                int imageId = rs.getInt("image_id");
                 
-                foods.add(FoodDTO.toDto(new FoodDAO(id, name, price, inventory), promotion));
+                FoodDAO entity = new FoodDAO(id, name, price, inventory);
+                entity.setDescription(description);
+                entity.setCategory_id(categoryId);
+                entity.setImage(resolveImagePath(imageId));
+
+                foods.add(FoodDTO.toDto(entity, promotion));
             }
         } catch (Exception e) {
         	System.err.println("Lỗi newFoods: " + e.getMessage());
@@ -206,9 +241,16 @@ public class FoodRepositoryImpl implements FoodRepository{
 	public List<FoodDTO> promotionFoods() {
         List<FoodDTO> foods = new ArrayList<>();
         
-        String sql = "SELECT id, name, price, inventory, promotion FROM foods ORDER BY promotion DESC LIMIT 8";
+        String sql = """
+        		SELECT f.id, f.name, f.price, f.inventory,
+        		       f.description, f.category_id, f.promotion,
+        		       f.image_id
+        		FROM foods f
+        		ORDER BY f.promotion DESC
+        		LIMIT 8
+        		""";
         try (Connection conn = ds.getConnection();
-             PreparedStatement ps = conn.prepareStatement(sql);) {
+             PreparedStatement ps = conn.prepareStatement(sql)) {
 
         	ResultSet rs = ps.executeQuery();
             while (rs.next()) {
@@ -218,11 +260,37 @@ public class FoodRepositoryImpl implements FoodRepository{
                 int inventory = rs.getInt("inventory");
                 double promotion = rs.getDouble("promotion");
 
-                foods.add(FoodDTO.toDto(new FoodDAO(id, name, price, inventory), promotion));
+                String description = rs.getString("description");
+                int categoryId = rs.getInt("category_id");
+                int imageId = rs.getInt("image_id");
+
+                FoodDAO entity = new FoodDAO(id, name, price, inventory);
+                entity.setDescription(description);
+                entity.setCategory_id(categoryId);
+                entity.setImage(resolveImagePath(imageId));
+
+                foods.add(FoodDTO.toDto(entity, promotion));
             }
         } catch (Exception e) {
         	System.err.println("Lỗi promotionFoods: " + e.getMessage());
         }
         return foods;
+	}
+
+	private String resolveImagePath(int imageId) {
+		return imageId > 0 ? ("image/" + imageId) : PLACEHOLDER_IMAGE;
+	}
+
+	private String mapSortField(String sortField) {
+		if (sortField == null) {
+			return "f.id";
+		}
+		return switch (sortField) {
+			case "name" -> "f.name";
+			case "price" -> "f.price";
+			case "inventory" -> "f.inventory";
+			case "promotion" -> "f.promotion";
+			default -> "f.id";
+		};
 	}
 }

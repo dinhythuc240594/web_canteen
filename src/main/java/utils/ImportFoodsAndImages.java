@@ -41,7 +41,7 @@ public class ImportFoodsAndImages {
         try (Connection conn = DriverManager.getConnection(DB_URL, DB_USER, DB_PASSWORD)) {
             Class.forName("com.mysql.cj.jdbc.Driver");
 
-            System.out.println("🔌 Đã kết nối MySQL thành công.");
+            System.out.println(" Đã kết nối MySQL thành công.");
             conn.setAutoCommit(false);
 
             int totalFoods = 0;
@@ -52,7 +52,7 @@ public class ImportFoodsAndImages {
 
                 File dir = new File(PICTURE_ROOT + folderName);
                 if (!dir.exists() || !dir.isDirectory()) {
-                    System.err.println("⚠️ Bỏ qua thư mục (không tồn tại): " + folderName);
+                    System.err.println("Bỏ qua thư mục (không tồn tại): " + folderName);
                     continue;
                 }
 

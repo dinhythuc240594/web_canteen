@@ -37,7 +37,7 @@
             <div class="slider-item" onclick="location.href='food?action=detail&id=<%= food.getId() %>'">
                 <div class="slider-img">
                     <% if (food.getImage() != null && !food.getImage().isEmpty()) { %>
-                    <img src="<%= food.getImage() %>" alt="<%= food.getNameFood() %>" style="width:100%; height:100%; object-fit:cover;">
+                    <img src="<%= request.getContextPath() + "/" + food.getImage() %>" alt="<%= food.getNameFood() %>" style="width:100%; height:100%; object-fit:cover;">
                     <% } else { %>
                     <%= food.getNameFood() %>
                     <% } %>
@@ -66,7 +66,7 @@
             <div class="slider-item" onclick="location.href='food?action=detail&id=<%= food.getId() %>'">
                 <div class="slider-img">
                     <% if (food.getImage() != null && !food.getImage().isEmpty()) { %>
-                    <img src="<%= food.getImage() %>" alt="<%= food.getNameFood() %>" style="width:100%; height:100%; object-fit:cover;">
+                    <img src="<%= request.getContextPath() + "/" + food.getImage() %>" alt="<%= food.getNameFood() %>" style="width:100%; height:100%; object-fit:cover%;">
                     <% } else { %>
                     Ưu đãi
                     <% } %>
@@ -94,7 +94,7 @@
         <div class="food-item" onclick="location.href='food?action=detail&id=<%= food.getId() %>'">
             <div class="food-img">
                 <% if (food.getImage() != null && !food.getImage().isEmpty()) { %>
-                <img src="<%= food.getImage() %>" alt="<%= food.getNameFood() %>" style="width:100%; height:100%; object-fit:cover;">
+                <img src="<%= request.getContextPath() + "/" + food.getImage() %>" alt="<%= food.getNameFood() %>" style="width:100%; height:100%; object-fit:cover;">
                 <% } else { %>
                 <%= food.getNameFood() %>
                 <% } %>

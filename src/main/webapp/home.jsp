@@ -67,7 +67,7 @@
 		            %>
 		            	<div class="flex-shrink-0 w-48 bg-white rounded-lg shadow-sm overflow-hidden border border-gray-200 hover:shadow-md transition-shadow">
 		            		<div class="relative">
-                            	<img src="<%= food.getImage() %>"
+                            	<img src="<%= request.getContextPath() + "/" + food.getImage() %>"
                                  alt="<%= food.getNameFood() %>"
                                  class="w-full h-28 object-cover">
                             	<span class="absolute top-2 right-2 bg-red-500 text-white text-xs px-1 py-0.5 rounded"><%= food.getPromotion() %>%</span>
@@ -125,7 +125,7 @@
             		%>
             			
             			<div class="flex-shrink-0 w-48 bg-white rounded-lg shadow-sm overflow-hidden border border-gray-200 hover:shadow-md transition-shadow">
-							<img src="<%= food.getImage() %>"
+							<img src="<%= request.getContextPath() + "/" + food.getImage() %>"
 	                             alt="<%= food.getNameFood() %>"
 	                             class="w-full h-28 object-cover">
                         	<div class="p-3">
@@ -167,7 +167,7 @@
         	%>
 
                 <div class="bg-white rounded-lg shadow-sm overflow-hidden border border-gray-200 hover:shadow-md transition-shadow">
-                    <img src="<%= food.getImage() %>"
+                    <img src="<%= request.getContextPath() + "/" + food.getImage() %>"
 	                     alt="<%= food.getNameFood() %>"
                          class="w-full h-28 object-cover">
                     <div class="p-3">
