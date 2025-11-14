@@ -30,6 +30,13 @@
                               ${requestScope.currentPage == 'stalls' ? 'text-white bg-white/20' : 'text-white/80 hover:text-white'}">
 						Quầy
 					</a>
+					<% if (is_login) { %>
+					<a href="order-history"
+					   class="px-3 py-2 rounded-md text-sm font-medium transition-colors
+                              ${requestScope.currentPage == 'order-history' ? 'text-white bg-white/20' : 'text-white/80 hover:text-white'}">
+						Đơn hàng
+					</a>
+					<% } %>
 					<a href="${pageContext.request.contextPath}/admin.jsp"
 					   class="px-3 py-2 rounded-md text-sm font-medium text-white/80 hover:text-white">
 						Admin
@@ -91,6 +98,12 @@
 				   class="px-3 py-2 rounded-md text-sm font-medium text-left text-white/80 hover:text-white hover:bg-white/20">
 					Quầy
 				</a>
+				<% if (is_login) { %>
+				<a href="order-history"
+				   class="px-3 py-2 rounded-md text-sm font-medium text-left text-white/80 hover:text-white hover:bg-white/20">
+					Đơn hàng
+				</a>
+				<% } %>
 			</div>
 		</div>
 	</div>

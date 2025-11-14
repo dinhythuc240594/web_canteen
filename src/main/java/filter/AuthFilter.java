@@ -120,7 +120,9 @@ public class AuthFilter extends HttpFilter implements Filter {
                     System.out.println("session live");
                     HttpSession newSession = req.getSession(true);
                     newSession.setAttribute("is_login", true);
+                    newSession.setAttribute("userId", user.getId());
                     newSession.setAttribute("username", user.getUsername());
+                    newSession.setAttribute("type_user", user.getRole());
                     
                     String newToken = UUID.randomUUID().toString();
                     String newTokenHash = SHA256.hash256(newToken);

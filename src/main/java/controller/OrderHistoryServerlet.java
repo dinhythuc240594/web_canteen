@@ -10,14 +10,20 @@ import model.OrderDAO;
 import model.Order_FoodDAO;
 import model.Page;
 import model.PageRequest;
+import model.StallDAO;
 import repository.OrderRepository;
 import repository.Order_FoodRepository;
+import repository.StallRepository;
 import repositoryimpl.OrderRepositoryImpl;
 import repositoryimpl.Order_FoodRepositoryImpl;
+import repositoryimpl.StallRepositoryImpl;
+import serviceimpl.OrderServiceImpl;
+import serviceimpl.StallServiceImpl;
 import utils.DataSourceUtil;
 import utils.RequestUtil;
 
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -38,17 +44,17 @@ public class OrderHistoryServerlet extends HttpServlet {
      */
     public OrderHistoryServerlet() {
         super();
-        // TODO Auto-generated constructor stub
     }
 
-    private OrderRepository orderRepository;
+    private OrderServiceImpl orderService;
+    private StallServiceImpl stallService;
     private Order_FoodRepository orderFoodRepository;
-    private int PAGE_SIZE = 25;
 
     @Override
     public void init() throws ServletException {
     	DataSource ds = DataSourceUtil.getDataSource();
-        orderRepository = new OrderRepositoryImpl(ds);
+        orderService = new OrderServiceImpl(ds);
+        stallService = new StallServiceImpl(ds);
         orderFoodRepository = new Order_FoodRepositoryImpl(ds);
     }
 
@@ -57,40 +63,66 @@ public class OrderHistoryServerlet extends HttpServlet {
 	 * @see HttpServlet#doGet(HttpServletRequest request, HttpServletResponse response)
 	 */
 	protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
-		 HttpSession session = request.getSession(false);
-	        if (session == null || session.getAttribute("userId") == null) {
-	        	response.sendRedirect(request.getContextPath() + "/login");
-	            return;
-	        }
+		HttpSession session = request.getSession(false);
+        if (session == null || session.getAttribute("userId") == null) {
+        	response.sendRedirect(request.getContextPath() + "/login");
+            return;
+        }
 
-	        int userId = (int) session.getAttribute("userId");
+        int userId = (int) session.getAttribute("userId");
+        String userRole = (String) session.getAttribute("type_user");
+        
+        if (userRole == null) {
+            userRole = "customer"; // default role
+        }
 
-			String keyword = RequestUtil.getString(request, "keyword", "");
-			String sortField = RequestUtil.getString(request, "sortField", "name");
-			String orderField = RequestUtil.getString(request, "orderField", "ASC");
-			int page = RequestUtil.getInt(request, "page", 1);
-	        
-	        PageRequest pageReq = new PageRequest(page, PAGE_SIZE, sortField, orderField, keyword);
-	        List<OrderDAO> orders = this.orderRepository.findAll(pageReq);
+        List<OrderDAO> orders = new ArrayList<>();
+        Map<Integer, List<Order_FoodDAO>> orderFoodMap = new HashMap<>();
+        
+        // Role-based order retrieval
+        if ("admin".equals(userRole)) {
+            // Admin sees all orders
+            String keyword = RequestUtil.getString(request, "keyword", "");
+            String sortField = RequestUtil.getString(request, "sortField", "created_at");
+            String orderField = RequestUtil.getString(request, "orderField", "DESC");
+            int page = RequestUtil.getInt(request, "page", 1);
+            
+            PageRequest pageReq = new PageRequest(page, 25, sortField, orderField, keyword);
+            Page<OrderDAO> pageOrder = this.orderService.findAll(pageReq);
+            orders = pageOrder.getData();
+            
+            request.setAttribute("pageReq", pageReq);
+            request.setAttribute("pageOrder", pageOrder);
+        } else if ("stall".equals(userRole)) {
+            // Stall user sees only orders for their stall
+            List<StallDAO> stalls = stallService.findByManagerUserId(userId);
+            if (!stalls.isEmpty()) {
+                int stallId = stalls.get(0).getId(); // Get first stall (assuming one stall per user)
+                orders = orderService.findByStallId(stallId);
+                request.setAttribute("stallId", stallId);
+            }
+        } else {
+            // Customer sees only their own orders
+            orders = orderService.findByUserId(userId);
+        }
+        
+        // Get order details (food items) for each order
+        for (OrderDAO order : orders) {
+            List<Order_FoodDAO> items = orderFoodRepository.findByOrderId(order.getId());
+            orderFoodMap.put(order.getId(), items);
+        }
+        
+        request.setAttribute("orders", orders);
+        request.setAttribute("orderFoodMap", orderFoodMap);
+        request.setAttribute("userRole", userRole);
 
-//	        List<OrderDAO> orders = orderRepository.findByUserId(userId);	        
-//	        Map<Integer, List<Order_FoodDAO>> orderFoodMap = new HashMap<>();
-//	        for (OrderDAO order : orders) {
-//	            List<Order_FoodDAO> items = orderFoodRepository.findByOrderId(order.getId());
-//	            orderFoodMap.put(order.getId(), items);
-//	        }
-	        
-	        request.setAttribute("orders", orders);
-	        request.setAttribute("pageReq", pageReq);
-
-	        request.getRequestDispatcher("order_history.jsp").forward(request, response);
+        request.getRequestDispatcher("order_history.jsp").forward(request, response);
 	}
 
 	/**
 	 * @see HttpServlet#doPost(HttpServletRequest request, HttpServletResponse response)
 	 */
 	protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
-		// TODO Auto-generated method stub
 		doGet(request, response);
 	}
 

@@ -86,8 +86,57 @@ public class OrderServerlet extends HttpServlet {
 	 * @see HttpServlet#doPost(HttpServletRequest request, HttpServletResponse response)
 	 */
 	protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
-		// TODO Auto-generated method stub
-		doGet(request, response);
+		HttpSession session = request.getSession(false);
+        if (session == null || session.getAttribute("userId") == null) {
+        	response.sendRedirect(request.getContextPath() + "/login");
+            return;
+        }
+        
+        String action = request.getParameter("action");
+        
+        if ("updateStatus".equals(action)) {
+        	handleUpdateStatus(request, response);
+        } else {
+        	doGet(request, response);
+        }
+	}
+	
+	private void handleUpdateStatus(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+		HttpSession session = request.getSession();
+		String userRole = (String) session.getAttribute("type_user");
+		
+		// Only admin and stall can update order status
+		if (!"admin".equals(userRole) && !"stall".equals(userRole)) {
+			response.sendError(HttpServletResponse.SC_FORBIDDEN, "You don't have permission to update order status");
+			return;
+		}
+		
+		int orderId = Integer.parseInt(request.getParameter("orderId"));
+		String newStatus = request.getParameter("status");
+		
+		// Validate status
+		if (!isValidStatus(newStatus)) {
+			response.sendError(HttpServletResponse.SC_BAD_REQUEST, "Invalid status value");
+			return;
+		}
+		
+		boolean updated = orderRepository.updateStatus(orderId, newStatus);
+		
+		response.setContentType("application/json");
+		response.setCharacterEncoding("UTF-8");
+		
+		Map<String, Object> result = new HashMap<>();
+		result.put("success", updated);
+		result.put("message", updated ? "Order status updated successfully" : "Failed to update order status");
+		
+		response.getWriter().write(new com.google.gson.Gson().toJson(result));
+	}
+	
+	private boolean isValidStatus(String status) {
+		return "new_order".equals(status) || 
+		       "confirmed".equals(status) || 
+		       "in_delivery".equals(status) || 
+		       "delivered".equals(status);
 	}
 
 }

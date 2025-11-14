@@ -6,6 +6,34 @@
   To change this template use File | Settings | File Templates.
 --%>
 <%@ page language="java" contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
+<%
+    // Security check: Only admin can access this page
+    Integer userId = (Integer) session.getAttribute("userId");
+    String userRole = (String) session.getAttribute("type_user");
+    
+    if (userId == null) {
+        response.sendRedirect(request.getContextPath() + "/login");
+        return;
+    }
+    
+    if (!"admin".equals(userRole)) {
+        response.sendRedirect(request.getContextPath() + "/home");
+        return;
+    }
+    
+    // Get data from servlet
+    Integer totalUsers = (Integer) request.getAttribute("totalUsers");
+    Integer totalStalls = (Integer) request.getAttribute("totalStalls");
+    Double totalRevenue = (Double) request.getAttribute("totalRevenue");
+    Integer totalOrders = (Integer) request.getAttribute("totalOrders");
+    
+    if (totalUsers == null) totalUsers = 0;
+    if (totalStalls == null) totalStalls = 0;
+    if (totalRevenue == null) totalRevenue = 0.0;
+    if (totalOrders == null) totalOrders = 0;
+    
+    String contextPath = request.getContextPath();
+%>
 <!DOCTYPE html>
 <html lang="vi">
 <head>
@@ -64,15 +92,15 @@
                 <div data-view="dashboard" class="space-y-6 admin-view">
                     <div>
                         <h1 class="text-2xl font-bold text-gray-800">Tổng quan hệ thống</h1>
-                        <p class="text-gray-600">Thống kê hoạt động căn tin (mock)</p>
+                        <p class="text-gray-600">Thống kê hoạt động căn tin hôm nay</p>
                     </div>
 
                     <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
                         <div class="bg-white p-4 rounded-lg shadow-sm border">
                             <div class="flex items-center justify-between">
                                 <div>
-                                    <p class="text-sm text-gray-600">Doanh thu</p>
-                                    <p class="text-2xl font-bold text-green-600">2,450,000đ</p>
+                                    <p class="text-sm text-gray-600">Doanh thu hôm nay</p>
+                                    <p class="text-2xl font-bold text-green-600"><%= String.format("%,.0f", totalRevenue) %>đ</p>
                                 </div>
                                 <i data-lucide="dollar-sign" class="text-green-600"></i>
                             </div>
@@ -80,8 +108,8 @@
                         <div class="bg-white p-4 rounded-lg shadow-sm border">
                             <div class="flex items-center justify-between">
                                 <div>
-                                    <p class="text-sm text-gray-600">Đơn hoàn thành</p>
-                                    <p class="text-2xl font-bold text-blue-600">124</p>
+                                    <p class="text-sm text-gray-600">Đơn hôm nay</p>
+                                    <p class="text-2xl font-bold text-blue-600"><%= totalOrders %></p>
                                 </div>
                                 <i data-lucide="package" class="text-blue-600"></i>
                             </div>
@@ -90,7 +118,7 @@
                             <div class="flex items-center justify-between">
                                 <div>
                                     <p class="text-sm text-gray-600">Người dùng</p>
-                                    <p class="text-2xl font-bold text-purple-600">1,234</p>
+                                    <p class="text-2xl font-bold text-purple-600"><%= totalUsers %></p>
                                 </div>
                                 <i data-lucide="users" class="text-purple-600"></i>
                             </div>
@@ -98,58 +126,62 @@
                         <div class="bg-white p-4 rounded-lg shadow-sm border">
                             <div class="flex items-center justify-between">
                                 <div>
-                                    <p class="text-sm text-gray-600">Món ăn</p>
-                                    <p class="text-2xl font-bold text-orange-600">86</p>
+                                    <p class="text-sm text-gray-600">Quầy ăn</p>
+                                    <p class="text-2xl font-bold text-orange-600"><%= totalStalls %></p>
                                 </div>
-                                <i data-lucide="utensils" class="text-orange-600"></i>
+                                <i data-lucide="store" class="text-orange-600"></i>
                             </div>
                         </div>
                     </div>
 
                     <div class="grid grid-cols-1 lg:grid-cols-2 gap-4">
                         <div class="bg-white p-4 rounded-lg shadow-sm border">
-                            <h3 class="text-lg font-semibold mb-3">Thống kê theo quầy</h3>
-                            <div class="divide-y">
-                                <div class="flex justify-between py-2">
-                                    <div>
-                                        <p class="font-medium">Quầy cơm & món khô</p>
-                                        <p class="text-sm text-gray-600">56 đơn, 68 tổng</p>
+                            <h3 class="text-lg font-semibold mb-3">Liên kết nhanh</h3>
+                            <div class="space-y-2">
+                                <a href="<%=contextPath%>/statistics" class="block p-3 border rounded hover:bg-gray-50 transition-colors">
+                                    <div class="flex items-center justify-between">
+                                        <span class="font-medium">Xem báo cáo thống kê</span>
+                                        <i data-lucide="arrow-right" class="w-4 h-4"></i>
                                     </div>
-                                    <div class="text-right">
-                                        <p class="font-semibold text-green-600">1,250,000đ</p>
-                                        <p class="text-xs text-gray-500">Nguyễn Văn A</p>
+                                </a>
+                                <a href="<%=contextPath%>/stall-orders" class="block p-3 border rounded hover:bg-gray-50 transition-colors">
+                                    <div class="flex items-center justify-between">
+                                        <span class="font-medium">Quản lý đơn hàng</span>
+                                        <i data-lucide="arrow-right" class="w-4 h-4"></i>
                                     </div>
-                                </div>
-                                <div class="flex justify-between py-2">
-                                    <div>
-                                        <p class="font-medium">Quầy món nước</p>
-                                        <p class="text-sm text-gray-600">40 đơn, 52 tổng</p>
+                                </a>
+                                <a href="<%=contextPath%>/foods?action=list" class="block p-3 border rounded hover:bg-gray-50 transition-colors">
+                                    <div class="flex items-center justify-between">
+                                        <span class="font-medium">Quản lý món ăn</span>
+                                        <i data-lucide="arrow-right" class="w-4 h-4"></i>
                                     </div>
-                                    <div class="text-right">
-                                        <p class="font-semibold text-green-600">820,000đ</p>
-                                        <p class="text-xs text-gray-500">Trần Thị B</p>
+                                </a>
+                                <a href="<%=contextPath%>/store" class="block p-3 border rounded hover:bg-gray-50 transition-colors">
+                                    <div class="flex items-center justify-between">
+                                        <span class="font-medium">Quản lý quầy ăn</span>
+                                        <i data-lucide="arrow-right" class="w-4 h-4"></i>
                                     </div>
-                                </div>
+                                </a>
                             </div>
                         </div>
                         <div class="bg-white p-4 rounded-lg shadow-sm border">
                             <h3 class="text-lg font-semibold mb-3">Trạng thái hệ thống</h3>
                             <div class="space-y-2">
                                 <div class="flex justify-between">
-                                    <span>Quầy hoạt động</span>
-                                    <span class="font-semibold text-green-600">3/5</span>
+                                    <span>Tổng quầy ăn</span>
+                                    <span class="font-semibold text-green-600"><%= totalStalls %></span>
                                 </div>
                                 <div class="flex justify-between">
-                                    <span>Món đang hoạt động</span>
-                                    <span class="font-semibold text-green-600">72/86</span>
+                                    <span>Tổng người dùng</span>
+                                    <span class="font-semibold text-green-600"><%= totalUsers %></span>
                                 </div>
                                 <div class="flex justify-between">
-                                    <span>Người dùng hoạt động</span>
-                                    <span class="font-semibold text-green-600">1,050/1,234</span>
+                                    <span>Đơn hàng hôm nay</span>
+                                    <span class="font-semibold text-blue-600"><%= totalOrders %></span>
                                 </div>
                                 <div class="flex justify-between">
-                                    <span>Đơn chờ xử lý</span>
-                                    <span class="font-semibold text-yellow-600">8</span>
+                                    <span>Doanh thu hôm nay</span>
+                                    <span class="font-semibold text-green-600"><%= String.format("%,.0f", totalRevenue) %>đ</span>
                                 </div>
                             </div>
                         </div>
@@ -510,6 +542,119 @@
 
     // Lần đầu vào trang
     setActiveView(location.hash.replace('#', '') || 'dashboard');
+    
+    // Load data when switching tabs
+    window.addEventListener('hashchange', function() {
+        const hash = location.hash.replace('#', '');
+        if (hash === 'users') {
+            loadUsers();
+        } else if (hash === 'stalls') {
+            loadStalls();
+        }
+    });
+    
+    // Load users data
+    function loadUsers() {
+        fetch('<%=contextPath%>/admin?action=users')
+            .then(response => response.json())
+            .then(users => {
+                const tbody = document.querySelector('[data-view="users"] tbody');
+                if (tbody && users.length > 0) {
+                    tbody.innerHTML = users.map(user => {
+                        const roleClass = user.role === 'admin' ? 'bg-red-100 text-red-800' : 
+                                         user.role === 'stall' ? 'bg-purple-100 text-purple-800' : 
+                                         'bg-blue-100 text-blue-800';
+                        const statusClass = user.status ? 'bg-green-100 text-green-800' : 'bg-red-100 text-red-800';
+                        const statusText = user.status ? 'Hoạt động' : 'Khóa';
+                        
+                        return `
+                            <tr class="border-b hover:bg-gray-50">
+                                <td class="py-3 px-4">#${user.id}</td>
+                                <td class="py-3 px-4">${user.username}</td>
+                                <td class="py-3 px-4">${user.email || 'N/A'}</td>
+                                <td class="py-3 px-4">${user.phone || 'N/A'}</td>
+                                <td class="py-3 px-4"><span class="px-2 py-1 rounded text-xs ${roleClass}">${user.role}</span></td>
+                                <td class="py-3 px-4"><span class="px-2 py-1 rounded text-xs ${statusClass}">${statusText}</span></td>
+                                <td class="py-3 px-4">${user.createDate ? new Date(user.createDate).toLocaleDateString('vi-VN') : 'N/A'}</td>
+                                <td class="py-3 px-4">
+                                    <div class="flex space-x-2">
+                                        <button onclick="toggleUserStatus(${user.id}, ${!user.status})" class="p-1 text-blue-600 hover:text-blue-800" title="${user.status ? 'Khóa' : 'Mở khóa'}">
+                                            <i data-lucide="${user.status ? 'user-x' : 'user-check'}" class="w-4 h-4"></i>
+                                        </button>
+                                    </div>
+                                </td>
+                            </tr>
+                        `;
+                    }).join('');
+                    lucide.createIcons();
+                }
+            })
+            .catch(error => console.error('Error loading users:', error));
+    }
+    
+    // Load stalls data
+    function loadStalls() {
+        fetch('<%=contextPath%>/admin?action=stalls')
+            .then(response => response.json())
+            .then(stalls => {
+                const tbody = document.querySelector('[data-view="stalls"] tbody');
+                if (tbody && stalls.length > 0) {
+                    tbody.innerHTML = stalls.map(stall => {
+                        const statusClass = stall.isOpen ? 'bg-green-100 text-green-800' : 'bg-red-100 text-red-800';
+                        const statusText = stall.isOpen ? 'Mở cửa' : 'Đóng cửa';
+                        
+                        return `
+                            <tr class="border-b hover:bg-gray-50">
+                                <td class="py-3 px-4">#${stall.id}</td>
+                                <td class="py-3 px-4">${stall.name}</td>
+                                <td class="py-3 px-4">${stall.description || 'N/A'}</td>
+                                <td class="py-3 px-4">User #${stall.managerUserId}</td>
+                                <td class="py-3 px-4"><span class="px-2 py-1 rounded text-xs ${statusClass}">${statusText}</span></td>
+                                <td class="py-3 px-4">
+                                    <div class="flex space-x-2">
+                                        <button class="p-1 text-blue-600 hover:text-blue-800" title="Sửa">
+                                            <i data-lucide="edit" class="w-4 h-4"></i>
+                                        </button>
+                                    </div>
+                                </td>
+                            </tr>
+                        `;
+                    }).join('');
+                    lucide.createIcons();
+                }
+            })
+            .catch(error => console.error('Error loading stalls:', error));
+    }
+    
+    // Toggle user status
+    function toggleUserStatus(userId, newStatus) {
+        if (!confirm('Bạn có chắc chắn muốn ' + (newStatus ? 'mở khóa' : 'khóa') + ' tài khoản này?')) {
+            return;
+        }
+        
+        fetch('<%=contextPath%>/admin', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+            body: new URLSearchParams({
+                action: 'toggleUserStatus',
+                id: userId,
+                status: newStatus
+            })
+        })
+        .then(response => response.json())
+        .then(data => {
+            if (data.success) {
+                alert(data.message);
+                loadUsers();
+            } else {
+                alert('Lỗi: ' + data.message);
+            }
+        })
+        .catch(error => {
+            console.error('Error:', error);
+            alert('Có lỗi xảy ra');
+        });
+    }
 </script>
 </body>
 </html>

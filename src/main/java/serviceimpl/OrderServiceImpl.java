@@ -47,6 +47,11 @@ public class OrderServiceImpl implements OrderService{
 	}
 
 	@Override
+	public List<OrderDAO> findByStallId(int stallId) {
+		return this.orderRepository.findByStallId(stallId);
+	}
+
+	@Override
 	public List<OrderDAO> findByStallIdAndStatus(int stallId, String status) {
 		return this.orderRepository.findByStallIdAndStatus(stallId, status);
 	}

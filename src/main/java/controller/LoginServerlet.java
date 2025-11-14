@@ -63,6 +63,7 @@ public class LoginServerlet extends HttpServlet {
 		UserDAO user = this.userSerImpl.getUser(username);
 		if(isLogin) {
 			session.setAttribute("is_login", isLogin);
+			session.setAttribute("userId", user.getId());
 			session.setAttribute("username", user.getUsername());
 			session.setAttribute("type_user", user.getRole());
 			

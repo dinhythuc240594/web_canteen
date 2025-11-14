@@ -13,6 +13,7 @@ public interface OrderRepository {
     void deleteById(int id);
     int count(String keyword);
     List<OrderDAO> findByUserId(int userId);
+    List<OrderDAO> findByStallId(int stallId);
     List<OrderDAO> findByStallIdAndStatus(int stallId, String status);
     boolean updateStatus(int id, String newStatus);
 	

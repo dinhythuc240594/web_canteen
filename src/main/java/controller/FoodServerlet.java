@@ -53,6 +53,24 @@ public class FoodServerlet extends HttpServlet {
 		int id = RequestUtil.getInt(request, "id", 1);
 		FoodDTO foundFood = null;
 		
+		// Check authentication for sensitive operations
+		HttpSession session = request.getSession(false);
+		String userRole = (String) (session != null ? session.getAttribute("type_user") : null);
+		Integer userId = (Integer) (session != null ? session.getAttribute("userId") : null);
+		
+		// Operations that require authentication and authorization
+		if ("create".equals(action) || "update".equals(action) || "delete".equals(action)) {
+			if (userId == null) {
+				response.sendRedirect(request.getContextPath() + "/login");
+				return;
+			}
+			// Only admin and stall can create/update/delete foods
+			if (!"admin".equals(userRole) && !"stall".equals(userRole)) {
+				response.sendRedirect(request.getContextPath() + "/home");
+				return;
+			}
+		}
+		
 		RequestDispatcher rd;
 		switch (action) {
 			case "list":
@@ -122,6 +140,22 @@ public class FoodServerlet extends HttpServlet {
 	 * @see HttpServlet#doPost(HttpServletRequest request, HttpServletResponse response)
 	 */
 	protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+		// Check authentication for POST operations (create, update, delete)
+		HttpSession session = request.getSession(false);
+		String userRole = (String) (session != null ? session.getAttribute("type_user") : null);
+		Integer userId = (Integer) (session != null ? session.getAttribute("userId") : null);
+		
+		if (userId == null) {
+			response.sendRedirect(request.getContextPath() + "/login");
+			return;
+		}
+		
+		// Only admin and stall can create/update foods
+		if (!"admin".equals(userRole) && !"stall".equals(userRole)) {
+			response.sendRedirect(request.getContextPath() + "/home");
+			return;
+		}
+		
 		String action = request.getParameter("action");
 		
         String nameFood = request.getParameter("nameFood");

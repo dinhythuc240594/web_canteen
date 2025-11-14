@@ -58,43 +58,89 @@ public class CartServerlet extends HttpServlet {
     protected void doGet(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
 
-        HttpSession session = request.getSession();
-
-        String cart = (String) session.getAttribute("cart");
-        session.setAttribute("cart", cart);
+        HttpSession session = request.getSession(false);
+        
+        // // Check if user is logged in
+        // if (session == null || session.getAttribute("userId") == null) {
+        //     response.sendRedirect(request.getContextPath() + "/login");
+        //     return;
+        // }
+        
+        // Get cart from session (no need to set it again)
+        List<Order_FoodDAO> cart = (List<Order_FoodDAO>) session.getAttribute("cart");
+        if (cart == null) {
+            cart = new ArrayList<>();
+            session.setAttribute("cart", cart);
+        }
+        
+        // Forward to cart page
         request.getRequestDispatcher("cart.jsp").forward(request, response);
-//        response.sendRedirect(request.getContextPath() + "/cart");
     }
 
     @Override
     protected void doPost(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
 
+        HttpSession session = request.getSession(false);
+        
+        // Check if user is logged in for all cart operations
+        if (session == null || session.getAttribute("userId") == null) {
+            response.sendRedirect(request.getContextPath() + "/login");
+            return;
+        }
+        
         String action = RequestUtil.getString(request, "action", "");
-        String orders_raw = RequestUtil.getString(request, "orders", "[]");
-        System.out.println(orders_raw);
-//        ObjectMapper mapper = new ObjectMapper();
-//        List<OrderFoodDTO> orders = mapper.readValue(
-//        		orders_raw, new TypeReference<List<OrderFoodDTO>>() {}
-//        	);
-        HttpSession session = request.getSession();
-
-        List<Order_FoodDAO> cart = (List<Order_FoodDAO>) session.getAttribute("cart");
-        if (cart == null) cart = new ArrayList<>();
 
         switch (action) {
             case "add":
                 try {
-
-                	    
-//                    session.setAttribute("cart", cart);
-                    response.sendRedirect(request.getContextPath() + "/cart");
-                } catch (NumberFormatException e) {
-                    response.sendRedirect(request.getContextPath() + "/cart?error=invalid_data");
+                    String orders_raw = RequestUtil.getString(request, "orders", "[]");
+                    System.out.println("Received cart data: " + orders_raw);
+                    
+                    // Parse JSON cart data from localStorage
+                    ObjectMapper mapper = new ObjectMapper();
+                    List<Map<String, Object>> cartItems = mapper.readValue(
+                        orders_raw, new TypeReference<List<Map<String, Object>>>() {}
+                    );
+                    
+                    // Convert to Order_FoodDAO objects
+                    List<Order_FoodDAO> cart = new ArrayList<>();
+                    Integer stallId = null;
+                    
+                    for (Map<String, Object> item : cartItems) {
+                        Order_FoodDAO orderFood = new Order_FoodDAO();
+                        orderFood.setFoodId(((Number) item.get("id")).intValue());
+                        orderFood.setQuantity(((Number) item.get("quantity")).intValue());
+                        orderFood.setPriceAtOrder(((Number) item.get("price")).doubleValue());
+                        orderFood.setName((String) item.get("name"));
+                        orderFood.setImage((String) item.get("image"));
+                        
+                        // Store stallId for the order (all items should be from same stall)
+                        if (stallId == null && item.get("stall_id") != null) {
+                            stallId = ((Number) item.get("stall_id")).intValue();
+                        }
+                        
+                        cart.add(orderFood);
+                    }
+                    
+                    // Save cart and stallId to session
+                    session.setAttribute("cart", cart);
+                    if (stallId != null) {
+                        session.setAttribute("stallId", stallId);
+                    }
+                    
+                    response.setStatus(HttpServletResponse.SC_OK);
+                    response.getWriter().write("{\"status\":\"success\"}");
+                    
+                } catch (Exception e) {
+                    e.printStackTrace();
+                    response.setStatus(HttpServletResponse.SC_BAD_REQUEST);
+                    response.getWriter().write("{\"status\":\"error\",\"message\":\"" + e.getMessage() + "\"}");
                 }
                 return;
 
             case "checkout":
+                List<Order_FoodDAO> cart = (List<Order_FoodDAO>) session.getAttribute("cart");
                 processCheckout(request, response, session, cart);
                 return;
 
@@ -129,10 +175,21 @@ public class CartServerlet extends HttpServlet {
                 return;
             }
 
+            // Get stallId from parameter or session
             int stallId = 0;
-            try {
-                stallId = Integer.parseInt(stallParam);
-            } catch (NumberFormatException ignored) {
+            if (stallParam != null && !stallParam.isEmpty()) {
+                try {
+                    stallId = Integer.parseInt(stallParam);
+                } catch (NumberFormatException ignored) {
+                }
+            }
+            
+            // If not in parameter, try to get from session
+            if (stallId == 0) {
+                Integer sessionStallId = (Integer) session.getAttribute("stallId");
+                if (sessionStallId != null) {
+                    stallId = sessionStallId;
+                }
             }
 
             double total = cart.stream()
@@ -154,7 +211,10 @@ public class CartServerlet extends HttpServlet {
                 orderFoodRepository.create(item);
             }
 
+            // Clear cart and stallId from session
             session.removeAttribute("cart");
+            session.removeAttribute("stallId");
+            
             request.setAttribute("order", createdOrder);
             request.getRequestDispatcher("/order-success.jsp").forward(request, response);
 

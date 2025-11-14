@@ -61,7 +61,7 @@
         <div class="p-3">
           <h3 class="font-medium text-gray-800 text-sm truncate"><%= food.getNameFood() %></h3>
           <p class="text-blue-600 font-bold text-sm"><%= food.getPriceFood() %>đ</p>
-          <button onclick="addToCart(<%= food.getStallId() %>,, <%= food.getId() %>, '<%= food.getNameFood() %>', <%= food.getPriceFood() %>, '<%= food.getImage() %>')"
+          <button onclick="addToCart(<%= food.getStallId() %>, <%= food.getId() %>, '<%= food.getNameFood() %>', <%= food.getPriceFood() %>, '<%= food.getImage() %>')"
                   class="mt-2 w-full bg-blue-600 text-white py-1.5 rounded text-sm hover:bg-blue-700 transition">
             Thêm vào giỏ
           </button>
@@ -177,29 +177,24 @@
       return;
     }
     
-    var data = {
-    	'orders': JSON.stringify(cart),
-    	'action': 'add'
-    };
-
-    console.log(cart);
-	$.ajax({
-	    type: "GET",
-	    url: "cart",
-	    data: data,
-	    dataType: "json",
-	    success: function(response) {
-	        console.log("Success:", response);
-	    },
-	    error: function(xhr, status, error) {
-	        console.error("Error:", status, error);
-	    },
-	    complete: function(xhr, status) {
-	        console.log("Request complete.");
-	    }
-	});
-    
-    
+    // Send cart data to server via POST
+    $.ajax({
+      type: "POST",
+      url: "cart",
+      data: {
+        'orders': JSON.stringify(cart),
+        'action': 'add'
+      },
+      success: function(response) {
+        console.log("Cart saved successfully");
+        // Redirect to cart page
+        window.location.href = 'cart';
+      },
+      error: function(xhr, status, error) {
+        console.error("Error saving cart:", status, error);
+        alert("Có lỗi xảy ra khi lưu giỏ hàng. Vui lòng thử lại!");
+      }
+    });
   }
 </script>
 </body>

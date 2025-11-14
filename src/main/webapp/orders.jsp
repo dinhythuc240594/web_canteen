@@ -1,6 +1,13 @@
 <%@ page contentType="text/html;charset=UTF-8" language="java" %>
 <%@ page import="java.util.*, model.OrderDAO, model.Order_FoodDAO" %>
 <%
+    // Security check: Redirect to login if not authenticated
+    Integer userId = (Integer) session.getAttribute("userId");
+    if (userId == null) {
+        response.sendRedirect(request.getContextPath() + "/login");
+        return;
+    }
+    
     List<OrderDAO> orders = (List<OrderDAO>) request.getAttribute("orders");
     String contextPath = request.getContextPath();
     Map<Integer, List<Order_FoodDAO>> orderFoodMap = (Map<Integer, List<Order_FoodDAO>>)request.getAttribute("orderFoodMap");

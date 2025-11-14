@@ -131,6 +131,30 @@ public class OrderRepositoryImpl implements OrderRepository{
 	}
 
 	@Override
+	public List<OrderDAO> findByStallId(int stallId) {
+		List<OrderDAO> orders = new ArrayList<>();
+        String sql = 
+            "SELECT id, user_id, stall_id, total_price, status, created_at, delivery_location, payment_method " +
+            "FROM orders WHERE stall_id = ? ORDER BY created_at DESC";
+
+        try (Connection conn = ds.getConnection();
+             PreparedStatement pstmt = conn.prepareStatement(sql)) {
+
+            pstmt.setInt(1, stallId);
+
+            try (ResultSet rs = pstmt.executeQuery()) {
+                while (rs.next()) {
+                    orders.add(mapResultSetToOrderDAO(rs));
+                }
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+            throw new RuntimeException("Lỗi khi tìm đơn hàng theo Stall ID: " + stallId, e);
+        }
+        return orders;
+	}
+
+	@Override
 	public List<OrderDAO> findByStallIdAndStatus(int stallId, String status) {
 		List<OrderDAO> orders = new ArrayList<>();
         String sql = 
@@ -257,7 +281,30 @@ public class OrderRepositoryImpl implements OrderRepository{
 
 	@Override
 	public int count(String keyword) {
-		// TODO Auto-generated method stub
+		String sql = "SELECT COUNT(*) as total FROM orders";
+		if (keyword != null && !keyword.isEmpty()) {
+			sql += " WHERE id LIKE ? OR status LIKE ?";
+		}
+		
+		try (Connection conn = ds.getConnection();
+             PreparedStatement pstmt = conn.prepareStatement(sql)) {
+			
+			if (keyword != null && !keyword.isEmpty()) {
+				String searchPattern = "%" + keyword + "%";
+				pstmt.setString(1, searchPattern);
+				pstmt.setString(2, searchPattern);
+			}
+			
+			try (ResultSet rs = pstmt.executeQuery()) {
+				if (rs.next()) {
+					return rs.getInt("total");
+				}
+			}
+		} catch (SQLException e) {
+			e.printStackTrace();
+			throw new RuntimeException("Error counting orders", e);
+		}
+		
 		return 0;
 	}
 
