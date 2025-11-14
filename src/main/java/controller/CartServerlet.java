@@ -1,10 +1,11 @@
 package controller;
 
-import jakarta.json.Json;
 import jakarta.json.JsonArray;
+import jakarta.json.JsonBuilderFactory;
 import jakarta.json.JsonObject;
 import jakarta.json.JsonReader;
 import jakarta.json.JsonValue;
+import jakarta.json.stream.JsonCollectors;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.annotation.WebServlet;
 import jakarta.servlet.http.HttpServlet;
@@ -19,19 +20,18 @@ import repositoryimpl.OrderRepositoryImpl;
 import repositoryimpl.Order_FoodRepositoryImpl;
 import utils.DataSourceUtil;
 import utils.RequestUtil;
-
 import java.io.IOException;
-import java.io.StringReader;
-import java.sql.Date;
-import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Optional;
-import java.util.stream.Collectors;
+import java.util.Map;
 
 import javax.sql.DataSource;
 
-import org.apache.tomcat.util.json.JSONParser;
+import com.fasterxml.jackson.core.type.TypeReference;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.mysql.cj.xdevapi.JsonParser;
+
+import dto.OrderFoodDTO;
 
 /**
  * Servlet implementation class CartServerlet
@@ -54,77 +54,29 @@ public class CartServerlet extends HttpServlet {
         this.orderFoodRepository = new Order_FoodRepositoryImpl(ds);
     }
 
-    @SuppressWarnings("unchecked")
     @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
 
         HttpSession session = request.getSession();
-        String action = RequestUtil.getString(request, "action", "");
 
-        List<Order_FoodDAO> cart = (List<Order_FoodDAO>) session.getAttribute("cart");
-        if (cart == null) {
-            cart = new ArrayList<>();
-            session.setAttribute("cart", cart);
-        }
-
-        switch (action) {
-            case "remove":
-                int idToRemove = Integer.parseInt(request.getParameter("id"));
-                cart.removeIf(item -> item.getFoodId() == idToRemove);
-                session.setAttribute("cart", cart);
-                response.sendRedirect(request.getContextPath() + "/cart.jsp");
-                return;
-
-            case "checkout":
-                Object userIdObj = session.getAttribute("userId");
-                if (userIdObj == null) {
-                    response.sendRedirect(request.getContextPath() + "/login");
-                    return;
-                }
-
-                if (cart.isEmpty()) {
-                    response.sendRedirect(request.getContextPath() + "/cart?error=empty_cart");
-                    return;
-                }
-
-                double total = cart.stream()
-                        .mapToDouble(i -> i.getPriceAtOrder() * i.getQuantity())
-                        .sum();
-
-                int userId = (int) userIdObj;
-
-                OrderDAO order = new OrderDAO();
-                order.setUserId(userId);
-                order.setTotalPrice(total);
-                order.setStatus("Đang xử lý");
-
-                OrderDAO createdOrder = this.orderRepository.save(order);
-
-                for (Order_FoodDAO item : cart) {
-                    item.setOrderId(createdOrder.getId());
-                    this.orderFoodRepository.create(item);
-                }
-
-                session.removeAttribute("cart");
-                request.setAttribute("order", createdOrder);
-                request.getRequestDispatcher("/order-success.jsp").forward(request, response);
-                return;
-
-            default:
-            	request.getRequestDispatcher("/cart.jsp").forward(request, response);
-                return;
-        }
+        String cart = (String) session.getAttribute("cart");
+        session.setAttribute("cart", cart);
+        request.getRequestDispatcher("cart.jsp").forward(request, response);
+//        response.sendRedirect(request.getContextPath() + "/cart");
     }
 
-    @SuppressWarnings("unchecked")
     @Override
     protected void doPost(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
 
         String action = RequestUtil.getString(request, "action", "");
         String orders_raw = RequestUtil.getString(request, "orders", "[]");
-        String orders = orders_raw.replace('\'', '"');
+        System.out.println(orders_raw);
+//        ObjectMapper mapper = new ObjectMapper();
+//        List<OrderFoodDTO> orders = mapper.readValue(
+//        		orders_raw, new TypeReference<List<OrderFoodDTO>>() {}
+//        	);
         HttpSession session = request.getSession();
 
         List<Order_FoodDAO> cart = (List<Order_FoodDAO>) session.getAttribute("cart");
@@ -133,25 +85,9 @@ public class CartServerlet extends HttpServlet {
         switch (action) {
             case "add":
                 try {
-                		JsonReader reader = Json.createReader(new StringReader(orders));
-                		JsonArray jsonArray = reader.readArray();
-                		reader.close();
-                		
-                		for (JsonValue value : jsonArray) {
-                			JsonObject obj = value.asJsonObject();
-                			int id = obj.getInt("id");
-                			
-//                			Order_FoodDAO newItem = new Order_FoodDAO();
-//                            newItem.setFoodId();
-//                            newItem.setName(foodName);
-//                            newItem.setPriceAtOrder(price);
-//                            newItem.setQuantity(quantity);
-//                            cart.add(newItem);
-                		}
-                	    
-                        
 
-                    session.setAttribute("cart", cart);
+                	    
+//                    session.setAttribute("cart", cart);
                     response.sendRedirect(request.getContextPath() + "/cart");
                 } catch (NumberFormatException e) {
                     response.sendRedirect(request.getContextPath() + "/cart?error=invalid_data");

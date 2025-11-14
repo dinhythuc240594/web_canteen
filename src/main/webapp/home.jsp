@@ -61,7 +61,7 @@
         <div class="p-3">
           <h3 class="font-medium text-gray-800 text-sm truncate"><%= food.getNameFood() %></h3>
           <p class="text-blue-600 font-bold text-sm"><%= food.getPriceFood() %>đ</p>
-          <button onclick="addToCart(<%= food.getId() %>, '<%= food.getNameFood() %>', <%= food.getPriceFood() %>, '<%= food.getImage() %>')"
+          <button onclick="addToCart(<%= food.getStallId() %>,, <%= food.getId() %>, '<%= food.getNameFood() %>', <%= food.getPriceFood() %>, '<%= food.getImage() %>')"
                   class="mt-2 w-full bg-blue-600 text-white py-1.5 rounded text-sm hover:bg-blue-700 transition">
             Thêm vào giỏ
           </button>
@@ -93,10 +93,10 @@
     renderCart();
   });
 
-  function addToCart(id, name, price, image) {
+  function addToCart(stall_id, id, name, price, image) {
     const existing = cart.find(item => item.id === id);
     if (existing) existing.quantity += 1;
-    else cart.push({ id, name, price, image, quantity: 1 });
+    else cart.push({stall_id, id, name, price, image, quantity: 1 });
 
     localStorage.setItem('cart', JSON.stringify(cart));
     updateCartCount();
@@ -184,7 +184,7 @@
 
     console.log(cart);
 	$.ajax({
-	    type: "POST",
+	    type: "GET",
 	    url: "cart",
 	    data: data,
 	    dataType: "json",

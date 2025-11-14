@@ -16,6 +16,7 @@ public class FoodDTO {
 	private String description;
 	private Double promotion;
 	private Double priceAfterPromotion;
+	private int stallId;
 	
 	public FoodDTO() {
 		
@@ -32,7 +33,7 @@ public class FoodDTO {
 		this.setPromotion(promotion);
 	}
 
-	public FoodDTO(FoodDAO entity, Double promotion) {
+	public FoodDTO(FoodDAO entity, Double promotion, int stallId) {
 		this.id = entity.getId();
         this.nameFood = entity.getNameFood();
         this.priceFood = entity.getPriceFood();
@@ -42,15 +43,16 @@ public class FoodDTO {
 		this.description = entity.getDescription();
 		this.promotion = promotion;
 		this.priceAfterPromotion = entity.getPriceFood() * (1- (promotion/100));
+		this.stallId = stallId;
 	}
 	
-	public static FoodDTO toDto(FoodDAO dao, Double promotion) {
+	public static FoodDTO toDto(FoodDAO dao, Double promotion, int stallId) {
         if (dao == null) return null;
-        return new FoodDTO(dao, promotion);
+        return new FoodDTO(dao, promotion, stallId);
     }
 	
-	public static List<FoodDTO> toDtoList(List<FoodDAO> daoList, Double promotion) {
-        return daoList.stream().map(dao -> toDto(dao, promotion)).collect(Collectors.toList());
+	public static List<FoodDTO> toDtoList(List<FoodDAO> daoList, Double promotion, int stallId) {
+        return daoList.stream().map(dao -> toDto(dao, promotion, stallId)).collect(Collectors.toList());
     }
 
 	public int getId() {
@@ -123,6 +125,14 @@ public class FoodDTO {
 
 	public void setPromotion(Double promotion) {
 		this.promotion = promotion;
+	}
+
+	public int getStallId() {
+		return stallId;
+	}
+
+	public void setStallId(int stallId) {
+		this.stallId = stallId;
 	}
 	
 }

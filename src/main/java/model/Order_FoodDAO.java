@@ -11,6 +11,7 @@ public class Order_FoodDAO {
     private Double priceAtOrder;
     private Date date;
     private String name;
+    private String image;
 
     public Order_FoodDAO() {
     	
@@ -18,6 +19,12 @@ public class Order_FoodDAO {
 
     public Order_FoodDAO(int orderId, int foodId, int quantity, Double priceAtOrder) {
         this.orderId = orderId;
+        this.foodId = foodId;
+        this.quantity = quantity;
+        this.priceAtOrder = priceAtOrder;
+    }
+    
+    public Order_FoodDAO(int foodId, int quantity, Double priceAtOrder) {
         this.foodId = foodId;
         this.quantity = quantity;
         this.priceAtOrder = priceAtOrder;
@@ -77,6 +84,14 @@ public class Order_FoodDAO {
 
 	public void setName(String name) {
 		this.name = name;
+	}
+
+	public String getImage() {
+		return image;
+	}
+
+	public void setImage(String image) {
+		this.image = image;
 	}
 	
 }

@@ -24,7 +24,7 @@ public class FoodRepositoryImpl implements FoodRepository{
 	public FoodDTO findById(int id) {
         int idFood = id;
         FoodDTO foundFood = null;
-        String sql = "SELECT id, name, price, inventory, image, description, category_id, promotion FROM foods where id = ?";
+        String sql = "SELECT id, name, price, inventory, image, description, category_id, promotion, stall_id FROM foods where id = ?";
         try (
         	Connection conn = ds.getConnection();
              PreparedStatement ps = conn.prepareStatement(sql);) {
@@ -40,8 +40,9 @@ public class FoodRepositoryImpl implements FoodRepository{
                 String imageFood = rs.getString("image");
                 String descriptionFood = rs.getString("description");
                 double promotion = rs.getDouble("promotion");
+                int stall_id = rs.getInt("stall_id");
 
-                foundFood = FoodDTO.toDto(new FoodDAO(idFood, nameFood, priceFood, inventoryFood), promotion);
+                foundFood = FoodDTO.toDto(new FoodDAO(idFood, nameFood, priceFood, inventoryFood), promotion, stall_id);
                 break;
             }
 
@@ -111,7 +112,7 @@ public class FoodRepositoryImpl implements FoodRepository{
         String sortField = pageRequest.getSortField();
         String orderField = pageRequest.getOrderField();
         
-        String sql = "SELECT id, name, price, inventory, promotion FROM foods ";
+        String sql = "SELECT id, name, price, inventory, promotion, stall_id FROM foods ";
         if(keyword != "") {
         	sql += "WHERE name LIKE ? ";
         }
@@ -137,8 +138,9 @@ public class FoodRepositoryImpl implements FoodRepository{
                 double price = rs.getDouble("price");
                 int inventory = rs.getInt("inventory");
                 double promotion = rs.getDouble("promotion");
+                int stall_id = rs.getInt("stall_id");
 
-                foods.add(FoodDTO.toDto(new FoodDAO(id, name, price, inventory), promotion));
+                foods.add(FoodDTO.toDto(new FoodDAO(id, name, price, inventory), promotion, stall_id));
             }
         } catch (Exception e) {
         	System.err.println("Lỗi findAll: " + e.getMessage());
@@ -182,7 +184,7 @@ public class FoodRepositoryImpl implements FoodRepository{
 	public List<FoodDTO> newFoods() {
         List<FoodDTO> foods = new ArrayList<>();
         
-        String sql = "SELECT id, name, price, inventory, promotion, updated_at FROM foods ORDER BY updated_at DESC LIMIT 8";
+        String sql = "SELECT id, name, price, inventory, promotion, stall_id, updated_at FROM foods ORDER BY updated_at DESC LIMIT 8";
         try (Connection conn = ds.getConnection();
              PreparedStatement ps = conn.prepareStatement(sql);) {
 
@@ -193,8 +195,8 @@ public class FoodRepositoryImpl implements FoodRepository{
                 double price = rs.getDouble("price");
                 int inventory = rs.getInt("inventory");
                 double promotion = rs.getDouble("promotion");
-                
-                foods.add(FoodDTO.toDto(new FoodDAO(id, name, price, inventory), promotion));
+                int stall_id =  rs.getInt("stall_id");
+                foods.add(FoodDTO.toDto(new FoodDAO(id, name, price, inventory), promotion, stall_id));
             }
         } catch (Exception e) {
         	System.err.println("Lỗi newFoods: " + e.getMessage());
@@ -206,7 +208,7 @@ public class FoodRepositoryImpl implements FoodRepository{
 	public List<FoodDTO> promotionFoods() {
         List<FoodDTO> foods = new ArrayList<>();
         
-        String sql = "SELECT id, name, price, inventory, promotion FROM foods ORDER BY promotion DESC LIMIT 8";
+        String sql = "SELECT id, name, price, inventory, promotion, stall_id FROM foods ORDER BY promotion DESC LIMIT 8";
         try (Connection conn = ds.getConnection();
              PreparedStatement ps = conn.prepareStatement(sql);) {
 
@@ -217,8 +219,8 @@ public class FoodRepositoryImpl implements FoodRepository{
                 double price = rs.getDouble("price");
                 int inventory = rs.getInt("inventory");
                 double promotion = rs.getDouble("promotion");
-
-                foods.add(FoodDTO.toDto(new FoodDAO(id, name, price, inventory), promotion));
+                int stall_id = rs.getInt("stall_id");
+                foods.add(FoodDTO.toDto(new FoodDAO(id, name, price, inventory), promotion, stall_id));
             }
         } catch (Exception e) {
         	System.err.println("Lỗi promotionFoods: " + e.getMessage());
