@@ -7,7 +7,7 @@ import javax.sql.DataSource;
 import java.sql.*;
 
 /**
- * Implementation của ImageRepository
+  Implementation của ImageRepository
  */
 public class ImageRepositoryImpl implements ImageRepository {
     
@@ -50,14 +50,14 @@ public class ImageRepositoryImpl implements ImageRepository {
                 try (ResultSet rs = ps.getGeneratedKeys()) {
                     if (rs.next()) {
                         int generatedId = rs.getInt(1);
-                        System.out.println("✓ Image inserted with ID: " + generatedId);
+                        System.out.println("Image inserted with ID - Hình ảnh được chèn kèm ID: " + generatedId);
                         return generatedId;
                     }
                 }
             }
             
         } catch (SQLException e) {
-            System.err.println("✗ Lỗi insert image: " + e.getMessage());
+            System.err.println("LỖI insert image: " + e.getMessage());
             e.printStackTrace();
         }
         return -1;
@@ -103,7 +103,46 @@ public class ImageRepositoryImpl implements ImageRepository {
         }
         return null;
     }
-    
+
+    @Override
+    public ImageDAO findByFilename(String filename) {
+        String sql = "SELECT * FROM images WHERE filename = ? LIMIT 1";
+        try(Connection conn = ds.getConnection();
+            PreparedStatement ps = conn.prepareStatement(sql)) {
+
+            ps.setString(1, filename);
+            try (ResultSet rs = ps.executeQuery()) {
+                if (rs.next()) {
+                    return mapResultSetToImageDAO(rs);
+                }
+            }
+        } catch (SQLException e) {
+            System.err.println("Lỗi findByFilename - Tìm ảnh theo filename: " + e.getMessage());
+            e.printStackTrace();
+        }
+        return null;
+    }
+
+    @Override
+    public boolean existsByFilename(String filename) {
+        String sql = "SELECT * FROM images WHERE filename = ? LIMIT 1";
+
+        try (Connection conn = ds.getConnection();
+            PreparedStatement ps = conn.prepareStatement(sql)) {
+
+            ps.setString(1, filename);
+            try (ResultSet rs = ps.executeQuery()) {
+                return rs.next();
+            }
+
+        }
+        catch (SQLException e) {
+            System.err.println("Lỗi existsByFilename - Kiểm tra ảnh đã tồn tại chưa" + e.getMessage());
+            e.printStackTrace();
+        }
+        return false;
+    }
+
     @Override
     public boolean delete(int id) {
         String sql = "DELETE FROM images WHERE id = ?";
@@ -154,7 +193,7 @@ public class ImageRepositoryImpl implements ImageRepository {
             ps.setString(9, image.getEntityType());
             ps.setInt(10, image.getId());
             
-            int affectedRows = ps.executeUpdate();
+            int affectedRows = ps.executeUpdate(); //số dòng đã được cập nhật
             
             if (affectedRows > 0) {
                 System.out.println("✓ Image updated: ID " + image.getId());
@@ -167,5 +206,46 @@ public class ImageRepositoryImpl implements ImageRepository {
         }
         return false;
     }
+
+    @Override
+    public int upsert(ImageDAO image) {
+        //Kiểm tra ảnh đã tồn tại chưa
+        ImageDAO existing = findByFilename(image.getFilename());
+
+        if (existing != null) {
+            //Nếu đã tồn tại thì trả về ID hiện tại
+            System.out.println("Image already exists - Hình ảnh đã tồn tại: " + image.getFilename() + "(ID: " + existing.getId() + ")");
+            return existing.getId();
+        }
+        //Nếu chưa tồn tại thì insert mới
+        return insert(image);
+    }
+
+    /**
+     * Helper method: Map ResultSet to ImageDAO
+     */
+    private ImageDAO mapResultSetToImageDAO(ResultSet rs) throws SQLException {
+        ImageDAO img = new ImageDAO();
+        img.setId(rs.getInt("id"));
+        img.setFilename(rs.getString("filename"));
+        img.setMimeType(rs.getString("mime_type"));
+        img.setFileSize(rs.getInt("file_size"));
+        img.setImageData(rs.getString("image_data"));
+        img.setThumbnailData(rs.getString("thumbnail_data"));
+        img.setWidth(rs.getInt("width"));
+        img.setHeight(rs.getInt("height"));
+
+        int uploadedBy = rs.getInt("uploaded_by");
+        if (!rs.wasNull()) {
+            img.setUploadedBy(uploadedBy);
+        }
+
+        img.setEntityType(rs.getString("entity_type"));
+        img.setCreatedAt(rs.getTimestamp("created_at"));
+        img.setUpdatedAt(rs.getTimestamp("updated_at"));
+
+        return img;
+    }
 }
+
 

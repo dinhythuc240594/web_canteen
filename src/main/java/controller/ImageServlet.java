@@ -1,5 +1,6 @@
 package controller;
 
+import dto.ImageDTO;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.annotation.WebServlet;
 import jakarta.servlet.http.HttpServlet;
@@ -7,6 +8,8 @@ import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import model.ImageDAO;
 import repositoryimpl.ImageRepositoryImpl;
+import service.ImageService;
+import serviceimpl.ImageServiceIplm;
 import utils.DataSourceUtil;
 
 import javax.sql.DataSource;
@@ -21,13 +24,13 @@ import java.util.Base64;
 @WebServlet("/image/*")
 public class ImageServlet extends HttpServlet {
     
-    private static final long serialVersionUID = 1L;
-    private ImageRepositoryImpl imageRepository;
+//    private static final long serialVersionUID = 1L;
+    private ImageService imageService;
     
     @Override
     public void init() throws ServletException {
         DataSource ds = DataSourceUtil.getDataSource();
-        this.imageRepository = new ImageRepositoryImpl(ds);
+        this.imageService = new ImageServiceIplm(ds);
     }
     
     @Override
@@ -38,7 +41,7 @@ public class ImageServlet extends HttpServlet {
         String pathInfo = request.getPathInfo();
         
         if (pathInfo == null || pathInfo.length() <= 1) {
-            response.sendError(HttpServletResponse.SC_BAD_REQUEST, "Missing image ID");
+            response.sendError(HttpServletResponse.SC_BAD_REQUEST, "Missing image ID - Thiếu ID ảnh");
             return;
         }
         
@@ -46,44 +49,28 @@ public class ImageServlet extends HttpServlet {
             // Parse image ID
             String idStr = pathInfo.substring(1); // Bỏ dấu "/" đầu
             int imageId = Integer.parseInt(idStr);
-            
+
             // Query parameter để chọn thumbnail hay full
             String type = request.getParameter("type"); // "thumb" hoặc null (full)
-            
-            // Lấy ảnh từ database
-            ImageDAO image = imageRepository.findById(imageId);
-            
-            if (image == null) {
-                response.sendError(HttpServletResponse.SC_NOT_FOUND, "Image not found");
+
+            //gọi service để xử lý và lấy data hình ảnh
+            ImageDTO imageDTO = imageService.GetImageByID(imageId, type);
+
+            if (imageDTO == null || imageDTO.getImageBytes().length == 0) {
+                response.sendError(HttpServletResponse.SC_NOT_FOUND, "Missing image ID");
                 return;
             }
-            
-            // Chọn Base64 data (thumbnail hoặc full)
-            String base64Data;
-            if ("thumb".equals(type) && image.getThumbnailData() != null) {
-                base64Data = image.getThumbnailData();
-            } else {
-                base64Data = image.getImageData();
-            }
-            
-            if (base64Data == null || base64Data.isEmpty()) {
-                response.sendError(HttpServletResponse.SC_NOT_FOUND, "Image data is empty");
-                return;
-            }
-            
-            // Decode Base64 → byte[]
-            byte[] imageBytes = Base64.getDecoder().decode(base64Data);
-            
+
             // Set headers
-            response.setContentType(image.getMimeType());
-            response.setContentLength(imageBytes.length);
+            response.setContentType(imageDTO.getMimeType());
+            response.setContentLength(imageDTO.getImageBytes().length);
             
             // Cache 1 năm (vì ảnh không thay đổi, ID là unique)
             response.setHeader("Cache-Control", "public, max-age=31536000, immutable");
             response.setHeader("ETag", "\"" + imageId + "\"");
             
-            // Gửi ảnh về client
-            response.getOutputStream().write(imageBytes);
+            // Gửi ảnh về client - trình duyệt
+            response.getOutputStream().write(imageDTO.getImageBytes());
             
         } catch (NumberFormatException e) {
             response.sendError(HttpServletResponse.SC_BAD_REQUEST, "Invalid image ID");

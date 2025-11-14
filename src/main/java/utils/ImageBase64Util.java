@@ -162,5 +162,13 @@ public class ImageBase64Util {
     public static String toDataURL(String base64, String mimeType) {
         return "data:" + mimeType + ";base64," + base64;
     }
+
+
+    public static String toBase64(BufferedImage img, String mimeType) throws Exception {
+        String format = mimeType.contains("png") ? "png" : "jpg";
+        ByteArrayOutputStream baos = new ByteArrayOutputStream();
+        ImageIO.write(img, format, baos);
+        return Base64.getEncoder().encodeToString(baos.toByteArray());
+    }
 }
 

@@ -208,7 +208,7 @@ public class FoodRepositoryImpl implements FoodRepository{
         		       f.image_id
         		FROM foods f
         		ORDER BY f.updated_at DESC
-        		LIMIT 8
+        		LIMIT 10
         		""";
         try (Connection conn = ds.getConnection();
              PreparedStatement ps = conn.prepareStatement(sql)) {
@@ -246,8 +246,9 @@ public class FoodRepositoryImpl implements FoodRepository{
         		       f.description, f.category_id, f.promotion,
         		       f.image_id
         		FROM foods f
+        		WHERE f.promotion > 0
         		ORDER BY f.promotion DESC
-        		LIMIT 8
+   
         		""";
         try (Connection conn = ds.getConnection();
              PreparedStatement ps = conn.prepareStatement(sql)) {
