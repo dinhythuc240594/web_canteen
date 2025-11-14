@@ -50,9 +50,9 @@ public class AdminServlet extends HttpServlet {
 		// Security check: Only admin can access
 		HttpSession session = request.getSession(false);
 		String userRole = (String) (session != null ? session.getAttribute("type_user") : null);
-		Integer userId = (Integer) (session != null ? session.getAttribute("userId") : null);
+		String username = (String) (session != null ? session.getAttribute("username") : null);
 		
-		if (userId == null) {
+		if (username == null) {
 			response.sendRedirect(request.getContextPath() + "/login");
 			return;
 		}
@@ -100,9 +100,9 @@ public class AdminServlet extends HttpServlet {
 		// Security check: Only admin can access
 		HttpSession session = request.getSession(false);
 		String userRole = (String) (session != null ? session.getAttribute("type_user") : null);
-		Integer userId = (Integer) (session != null ? session.getAttribute("userId") : null);
+		String username = (String) (session != null ? session.getAttribute("username") : null);
 		
-		if (userId == null) {
+		if (username == null) {
 			response.sendRedirect(request.getContextPath() + "/login");
 			return;
 		}

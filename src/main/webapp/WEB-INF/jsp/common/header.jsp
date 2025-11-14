@@ -37,8 +37,7 @@
 						Đơn hàng
 					</a>
 					<% } %>
-					<a href="${pageContext.request.contextPath}/admin.jsp"
-					   class="px-3 py-2 rounded-md text-sm font-medium text-white/80 hover:text-white">
+					<a href="${pageContext.request.contextPath}/admin.jsp" class="px-3 py-2 rounded-md text-sm font-medium text-white/80 hover:text-white">
 						Admin
 					</a>
 				</nav>

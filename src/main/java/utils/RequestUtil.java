@@ -7,10 +7,10 @@ public class RequestUtil {
 	public static int getInt(HttpServletRequest request, String name, int defaultValue) {
 		try {
 			int value = Integer.parseInt(request.getParameter(name));
-//			System.out.println(name + ": " + Integer.toString(value));
+//			System.out.println(name + ": " + int.toString(value));
 			return value > 0 ? value:defaultValue;
 		} catch (Exception e) {
-//			System.out.println("default " + name + ": " + Integer.toString(defaultValue));
+//			System.out.println("default " + name + ": " + int.toString(defaultValue));
 			return defaultValue;
 		}
 	}

@@ -27,8 +27,8 @@ import java.util.Map;
 
 import javax.sql.DataSource;
 
-import com.fasterxml.jackson.core.type.TypeReference;
-import com.fasterxml.jackson.databind.ObjectMapper;
+// import com.fasterxml.jackson.core.type.TypeReference;
+// import com.fasterxml.jackson.databind.ObjectMapper;
 import com.mysql.cj.xdevapi.JsonParser;
 
 import dto.OrderFoodDTO;
@@ -97,35 +97,35 @@ public class CartServerlet extends HttpServlet {
                     String orders_raw = RequestUtil.getString(request, "orders", "[]");
                     System.out.println("Received cart data: " + orders_raw);
                     
-                    // Parse JSON cart data from localStorage
-                    ObjectMapper mapper = new ObjectMapper();
-                    List<Map<String, Object>> cartItems = mapper.readValue(
-                        orders_raw, new TypeReference<List<Map<String, Object>>>() {}
-                    );
+                    // // Parse JSON cart data from localStorage
+                    // ObjectMapper mapper = new ObjectMapper();
+                    // List<Map<String, Object>> cartItems = mapper.readValue(
+                    //     orders_raw, new TypeReference<List<Map<String, Object>>>() {}
+                    // );
                     
                     // Convert to Order_FoodDAO objects
                     List<Order_FoodDAO> cart = new ArrayList<>();
-                    Integer stallId = null;
+                    int stallId = 0;
                     
-                    for (Map<String, Object> item : cartItems) {
-                        Order_FoodDAO orderFood = new Order_FoodDAO();
-                        orderFood.setFoodId(((Number) item.get("id")).intValue());
-                        orderFood.setQuantity(((Number) item.get("quantity")).intValue());
-                        orderFood.setPriceAtOrder(((Number) item.get("price")).doubleValue());
-                        orderFood.setName((String) item.get("name"));
-                        orderFood.setImage((String) item.get("image"));
+                    // for (Map<String, Object> item : cartItems) {
+                    //     Order_FoodDAO orderFood = new Order_FoodDAO();
+                    //     orderFood.setFoodId(((Number) item.get("id")).intValue());
+                    //     orderFood.setQuantity(((Number) item.get("quantity")).intValue());
+                    //     orderFood.setPriceAtOrder(((Number) item.get("price")).doubleValue());
+                    //     orderFood.setName((String) item.get("name"));
+                    //     orderFood.setImage((String) item.get("image"));
                         
-                        // Store stallId for the order (all items should be from same stall)
-                        if (stallId == null && item.get("stall_id") != null) {
-                            stallId = ((Number) item.get("stall_id")).intValue();
-                        }
+                    //     // Store stallId for the order (all items should be from same stall)
+                    //     if (stallId > 0 && item.get("stall_id") != null) {
+                    //         stallId = ((Number) item.get("stall_id")).intValue();
+                    //     }
                         
-                        cart.add(orderFood);
-                    }
+                    //     cart.add(orderFood);
+                    // }
                     
                     // Save cart and stallId to session
                     session.setAttribute("cart", cart);
-                    if (stallId != null) {
+                    if (stallId > 0) {
                         session.setAttribute("stallId", stallId);
                     }
                     
@@ -159,8 +159,9 @@ public class CartServerlet extends HttpServlet {
                 return;
             }
 
-            Integer userId = (Integer) session.getAttribute("userId");
-            if (userId == null) {
+            int userId = (int) session.getAttribute("userId");
+            String username = (String) session.getAttribute("username");
+            if (username == null) {
                 session.setAttribute("redirectAfterLogin", request.getRequestURI());
                 response.sendRedirect(request.getContextPath() + "/login");
                 return;
@@ -186,8 +187,8 @@ public class CartServerlet extends HttpServlet {
             
             // If not in parameter, try to get from session
             if (stallId == 0) {
-                Integer sessionStallId = (Integer) session.getAttribute("stallId");
-                if (sessionStallId != null) {
+                int sessionStallId = (int) session.getAttribute("stallId");
+                if (sessionStallId > 0) {
                     stallId = sessionStallId;
                 }
             }

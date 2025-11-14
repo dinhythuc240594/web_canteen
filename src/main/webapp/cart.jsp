@@ -2,12 +2,12 @@
 <%@ page import="java.util.*, model.Order_FoodDAO" %>
 
 <%
-    <!-- // Security check: Redirect to login if not authenticated
-    Integer userId = (Integer) session.getAttribute("userId");
-    if (userId == null) {
+    // Security check: Redirect to login if not authenticated
+    String username = (String) session.getAttribute("username");
+    if (username == null) {
         response.sendRedirect(request.getContextPath() + "/login");
         return;
-    } -->
+    }
     
     // Lấy thông tin người dùng và giỏ hàng từ session
     List<Order_FoodDAO> cart = (List<Order_FoodDAO>) session.getAttribute("cart");
@@ -16,7 +16,7 @@
         session.setAttribute("cart", cart);
     }
     
-    Integer stallId = (Integer) session.getAttribute("stallId");
+    int stallId = (int) session.getAttribute("stallId");
 
     String error = request.getParameter("error");
     String success = request.getParameter("success");
@@ -116,7 +116,7 @@
           <h3 class="text-lg font-semibold text-gray-800 mb-4">Thông tin giao hàng</h3>
           <form action="${pageContext.request.contextPath}/cart" method="post" id="checkoutForm">
             <input type="hidden" name="action" value="checkout">
-            <input type="hidden" name="stallId" value="<%= stallId != null ? stallId : "" %>">
+            <input type="hidden" name="stallId" value="<%= stallId > 0 ? stallId : "" %>">
             
             <div class="space-y-4">
               <div>
@@ -154,7 +154,7 @@
 <script>
   // Check if user is logged in before checkout
   document.getElementById('checkoutForm')?.addEventListener('submit', function(e) {
-    <% if (userId == null) { %>
+    <% if (username == null) { %>
       e.preventDefault();
       alert('Vui lòng đăng nhập để thanh toán.');
       window.location.href = 'login';

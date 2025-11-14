@@ -43,9 +43,9 @@ public class StatisticsServlet extends HttpServlet {
 		// Security check: Only admin and stall can access
 		HttpSession session = request.getSession(false);
 		String userRole = (String) (session != null ? session.getAttribute("type_user") : null);
-		Integer userId = (Integer) (session != null ? session.getAttribute("userId") : null);
+		String username = (String) (session != null ? session.getAttribute("username") : null);
 		
-		if (userId == null) {
+		if (username == null) {
 			response.sendRedirect(request.getContextPath() + "/login");
 			return;
 		}
@@ -167,7 +167,7 @@ public class StatisticsServlet extends HttpServlet {
 			}
 			
 			Map<String, Object> foodData = foodStats.get(foodId);
-			int currentQty = (Integer) foodData.get("quantitySold");
+			int currentQty = (int) foodData.get("quantitySold");
 			double currentRevenue = (Double) foodData.get("revenue");
 			
 			foodData.put("quantitySold", currentQty + stat.getQuantitySold());
@@ -176,7 +176,7 @@ public class StatisticsServlet extends HttpServlet {
 		
 		// Convert to list and sort by quantity sold
 		List<Map<String, Object>> bestSelling = new ArrayList<>(foodStats.values());
-		bestSelling.sort((a, b) -> Integer.compare((Integer) b.get("quantitySold"), (Integer) a.get("quantitySold")));
+		bestSelling.sort((a, b) -> Integer.compare((int) b.get("quantitySold"), (int) a.get("quantitySold")));
 		
 		response.setContentType("application/json");
 		response.setCharacterEncoding("UTF-8");
@@ -212,7 +212,7 @@ public class StatisticsServlet extends HttpServlet {
 			}
 			
 			Map<String, Object> dayData = dailyStats.get(date);
-			int currentOrders = (Integer) dayData.get("ordersCount");
+			int currentOrders = (int) dayData.get("ordersCount");
 			double currentRevenue = (Double) dayData.get("revenue");
 			
 			dayData.put("ordersCount", currentOrders + stat.getOrdersCount());
@@ -262,7 +262,7 @@ public class StatisticsServlet extends HttpServlet {
 			if (stallRevenue.containsKey(stallId)) {
 				Map<String, Object> stallData = stallRevenue.get(stallId);
 				double currentRevenue = (Double) stallData.get("revenue");
-				int currentOrders = (Integer) stallData.get("ordersCount");
+				int currentOrders = (int) stallData.get("ordersCount");
 				
 				stallData.put("revenue", currentRevenue + stat.getRevenue());
 				stallData.put("ordersCount", currentOrders + stat.getOrdersCount());

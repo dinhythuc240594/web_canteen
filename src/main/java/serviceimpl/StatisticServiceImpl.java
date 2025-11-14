@@ -48,5 +48,10 @@ public class StatisticServiceImpl implements StatisticService{
 		return this.statisticRepository.findByStallIdAndFoodIdAndDate(stallId, foodId, statDate);
 	}
 
+	public List<StatisticDAO> findByDateRange(Date sqlStartDate, Date sqlEndDate) {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
 	
 }

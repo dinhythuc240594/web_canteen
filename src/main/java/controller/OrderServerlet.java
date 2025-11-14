@@ -60,6 +60,7 @@ public class OrderServerlet extends HttpServlet {
 	        }
 
 	        int userId = (int) session.getAttribute("userId");
+	        String username = (String) session.getAttribute("username");
 
 //			String keyword = RequestUtil.getString(request, "keyword", "");
 //			String sortField = RequestUtil.getString(request, "sortField", "name");

@@ -2,10 +2,10 @@
 <%@ page import="java.util.*, model.OrderDAO, model.Order_FoodDAO, model.StallDAO" %>
 <%
     // Security check: Only stall and admin can access this page
-    Integer userId = (Integer) session.getAttribute("userId");
+    String username = (String) session.getAttribute("username");
     String userRole = (String) session.getAttribute("type_user");
     
-    if (userId == null) {
+    if (username == null) {
         response.sendRedirect(request.getContextPath() + "/login");
         return;
     }

@@ -2,8 +2,8 @@
 <%@ page import="java.util.*, model.OrderDAO, model.Order_FoodDAO" %>
 <%
     // Security check: Redirect to login if not authenticated
-    Integer userId = (Integer) session.getAttribute("userId");
-    if (userId == null) {
+    String username = (String) session.getAttribute("username");
+    if (username == null) {
         response.sendRedirect(request.getContextPath() + "/login");
         return;
     }

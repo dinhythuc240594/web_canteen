@@ -8,10 +8,10 @@
 <%@ page language="java" contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
 <%
     // Security check: Only admin can access this page
-    Integer userId = (Integer) session.getAttribute("userId");
+    String username = (String) session.getAttribute("username");
     String userRole = (String) session.getAttribute("type_user");
     
-    if (userId == null) {
+    if (username == null) {
         response.sendRedirect(request.getContextPath() + "/login");
         return;
     }
@@ -22,15 +22,10 @@
     }
     
     // Get data from servlet
-    Integer totalUsers = (Integer) request.getAttribute("totalUsers");
-    Integer totalStalls = (Integer) request.getAttribute("totalStalls");
+    int totalUsers = (int) request.getAttribute("totalUsers");
+    int totalStalls = (int) request.getAttribute("totalStalls");
     Double totalRevenue = (Double) request.getAttribute("totalRevenue");
-    Integer totalOrders = (Integer) request.getAttribute("totalOrders");
-    
-    if (totalUsers == null) totalUsers = 0;
-    if (totalStalls == null) totalStalls = 0;
-    if (totalRevenue == null) totalRevenue = 0.0;
-    if (totalOrders == null) totalOrders = 0;
+    int totalOrders = (int) request.getAttribute("totalOrders");
     
     String contextPath = request.getContextPath();
 %>

@@ -42,9 +42,10 @@ public class StallOrderServlet extends HttpServlet {
 		// Security check: Only stall and admin can access
 		HttpSession session = request.getSession(false);
 		String userRole = (String) (session != null ? session.getAttribute("type_user") : null);
-		Integer userId = (Integer) (session != null ? session.getAttribute("userId") : null);
+		String username = (String) (session != null ? session.getAttribute("username") : null);
+		int userId = (int) session.getAttribute("userId");
 		
-		if (userId == null) {
+		if (username == null) {
 			response.sendRedirect(request.getContextPath() + "/login");
 			return;
 		}

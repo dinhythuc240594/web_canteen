@@ -56,11 +56,11 @@ public class FoodServerlet extends HttpServlet {
 		// Check authentication for sensitive operations
 		HttpSession session = request.getSession(false);
 		String userRole = (String) (session != null ? session.getAttribute("type_user") : null);
-		Integer userId = (Integer) (session != null ? session.getAttribute("userId") : null);
+		String username = (String) (session != null ? session.getAttribute("username") : null);
 		
 		// Operations that require authentication and authorization
 		if ("create".equals(action) || "update".equals(action) || "delete".equals(action)) {
-			if (userId == null) {
+			if (username == null) {
 				response.sendRedirect(request.getContextPath() + "/login");
 				return;
 			}
@@ -143,9 +143,9 @@ public class FoodServerlet extends HttpServlet {
 		// Check authentication for POST operations (create, update, delete)
 		HttpSession session = request.getSession(false);
 		String userRole = (String) (session != null ? session.getAttribute("type_user") : null);
-		Integer userId = (Integer) (session != null ? session.getAttribute("userId") : null);
+		String username = (String) (session != null ? session.getAttribute("username") : null);
 		
-		if (userId == null) {
+		if (username == null) {
 			response.sendRedirect(request.getContextPath() + "/login");
 			return;
 		}

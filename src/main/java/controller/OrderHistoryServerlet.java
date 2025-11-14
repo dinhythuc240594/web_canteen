@@ -70,6 +70,7 @@ public class OrderHistoryServerlet extends HttpServlet {
         }
 
         int userId = (int) session.getAttribute("userId");
+        String username = (String) session.getAttribute("username");
         String userRole = (String) session.getAttribute("type_user");
         
         if (userRole == null) {
