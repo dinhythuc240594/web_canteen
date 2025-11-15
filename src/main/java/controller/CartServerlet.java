@@ -27,9 +27,10 @@ import java.util.Map;
 
 import javax.sql.DataSource;
 
-// import com.fasterxml.jackson.core.type.TypeReference;
-// import com.fasterxml.jackson.databind.ObjectMapper;
-import com.mysql.cj.xdevapi.JsonParser;
+import org.json.simple.JSONArray;
+import org.json.simple.JSONObject;
+import org.json.simple.parser.JSONParser;
+import org.json.simple.parser.ParseException;
 
 import dto.OrderFoodDTO;
 
@@ -97,31 +98,40 @@ public class CartServerlet extends HttpServlet {
                     String orders_raw = RequestUtil.getString(request, "orders", "[]");
                     System.out.println("Received cart data: " + orders_raw);
                     
-                    // // Parse JSON cart data from localStorage
-                    // ObjectMapper mapper = new ObjectMapper();
-                    // List<Map<String, Object>> cartItems = mapper.readValue(
-                    //     orders_raw, new TypeReference<List<Map<String, Object>>>() {}
-                    // );
+                    // Parse JSON cart data from localStorage using json-simple
+                    JSONParser parser = new JSONParser();
+                    JSONArray cartItems = (JSONArray) parser.parse(orders_raw);
                     
                     // Convert to Order_FoodDAO objects
                     List<Order_FoodDAO> cart = new ArrayList<>();
                     int stallId = 0;
                     
-                    // for (Map<String, Object> item : cartItems) {
-                    //     Order_FoodDAO orderFood = new Order_FoodDAO();
-                    //     orderFood.setFoodId(((Number) item.get("id")).intValue());
-                    //     orderFood.setQuantity(((Number) item.get("quantity")).intValue());
-                    //     orderFood.setPriceAtOrder(((Number) item.get("price")).doubleValue());
-                    //     orderFood.setName((String) item.get("name"));
-                    //     orderFood.setImage((String) item.get("image"));
+                    for (Object obj : cartItems) {
+                        JSONObject item = (JSONObject) obj;
+                        Order_FoodDAO orderFood = new Order_FoodDAO();
                         
-                    //     // Store stallId for the order (all items should be from same stall)
-                    //     if (stallId > 0 && item.get("stall_id") != null) {
-                    //         stallId = ((Number) item.get("stall_id")).intValue();
-                    //     }
+                        // Parse each field from JSON object
+                        orderFood.setFoodId(((Long) item.get("id")).intValue());
+                        orderFood.setQuantity(((Long) item.get("quantity")).intValue());
                         
-                    //     cart.add(orderFood);
-                    // }
+                        // Handle price as either Long or Double
+                        Object priceObj = item.get("price");
+                        if (priceObj instanceof Long) {
+                            orderFood.setPriceAtOrder(((Long) priceObj).doubleValue());
+                        } else if (priceObj instanceof Double) {
+                            orderFood.setPriceAtOrder((Double) priceObj);
+                        }
+                        
+                        orderFood.setName((String) item.get("name"));
+                        orderFood.setImage((String) item.get("image"));
+                        
+                        // Store stallId for the order (all items should be from same stall)
+                        if (stallId == 0 && item.get("stall_id") != null) {
+                            stallId = ((Long) item.get("stall_id")).intValue();
+                        }
+                        
+                        cart.add(orderFood);
+                    }
                     
                     // Save cart and stallId to session
                     session.setAttribute("cart", cart);
@@ -132,6 +142,10 @@ public class CartServerlet extends HttpServlet {
                     response.setStatus(HttpServletResponse.SC_OK);
                     response.getWriter().write("{\"status\":\"success\"}");
                     
+                } catch (ParseException e) {
+                    e.printStackTrace();
+                    response.setStatus(HttpServletResponse.SC_BAD_REQUEST);
+                    response.getWriter().write("{\"status\":\"error\",\"message\":\"Invalid JSON format: " + e.getMessage() + "\"}");
                 } catch (Exception e) {
                     e.printStackTrace();
                     response.setStatus(HttpServletResponse.SC_BAD_REQUEST);
