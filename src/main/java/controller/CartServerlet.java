@@ -83,15 +83,13 @@ public class CartServerlet extends HttpServlet {
             throws ServletException, IOException {
 
         HttpSession session = request.getSession(false);
-        
+        String action = RequestUtil.getString(request, "action", "");
         // Check if user is logged in for all cart operations
-        if (session == null || session.getAttribute("userId") == null) {
+        if ((session == null || session.getAttribute("username") == null) && action.equals("checkout")) {
             response.sendRedirect(request.getContextPath() + "/login");
             return;
         }
         
-        String action = RequestUtil.getString(request, "action", "");
-
         switch (action) {
             case "add":
                 try {
